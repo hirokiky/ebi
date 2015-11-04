@@ -1,4 +1,5 @@
 import argparse
+from datetime import datetime
 import logging
 import os
 import shutil
@@ -59,13 +60,18 @@ def main():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('app_name', help='Application name to deploy')
-    parser.add_argument('version', help='Version label you want to specify')
+    parser.add_argument('--version', help='Version label you want to specify')
     parser.add_argument('--profile', help='AWS account')
     parser.add_argument('--dockerrun', default=DOCKERRUN_NAME,
                         help='Path to file used as Dockerrun.aws.json')
     parser.add_argument('--ebext', default=DOCKEREXT_NAME,
                         help='Path to directory used as .ebextensions/')
     parsed = parser.parse_args()
+
+    if parsed.version:
+        version = parsed.version
+    else:
+        version = datetime.now().strftime('%Y%m%d%H%M%S')
 
     if parsed.profile:
         session = boto3.session.Session(profile_name=parsed.profile)
@@ -76,7 +82,7 @@ def main():
     ebaws.set_region(session._session.get_config_variable('region'))
     ebaws.set_profile(session.profile_name)
 
-    bundled_zip = make_version(parsed.version,
+    bundled_zip = make_version(version,
                                dockerrun=parsed.dockerrun,
                                ebext=parsed.ebext)
     bucket, key = upload_app_version(parsed.app_name, bundled_zip)
@@ -85,13 +91,13 @@ def main():
 
     eb.create_application_version(
         ApplicationName=parsed.app_name,
-        VersionLabel=parsed.version,
+        VersionLabel=version,
         SourceBundle={
             'S3Bucket': bucket,
             'S3Key': key,
         }
     )
 
-    logger.info('Ok, now deploying the version %s for %s', parsed.version, parsed.app_name)
-    subprocess.call(['eb', 'deploy', parsed.app_name, '--version=' + parsed.version,
+    logger.info('Ok, now deploying the version %s for %s', version, parsed.app_name)
+    subprocess.call(['eb', 'deploy', parsed.app_name, '--version=' + version,
                      '--profile=' + session.profile_name])

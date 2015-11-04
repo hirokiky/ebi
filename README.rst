@@ -14,9 +14,9 @@ Requires Python>=3.5
 Usage
 -----
 
-Just type it on project root::
+To deploy app, just type it on project root::
 
-    $ ebi <app_name> <version>
+    $ ebi <app_name>
 
 This will
 
@@ -27,6 +27,7 @@ This will
 More options
 ------------
 
+* ``--version``: version label for app. default is timestamp.
 * ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
