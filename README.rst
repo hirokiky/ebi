@@ -24,8 +24,9 @@ This will
 2. Uploading zip to S3 as same directory as ``awsebcli``.
 3. Deploying app
 
-## More options
+More options
+------------
 
-``--dockerrun``: File path used as ``Dockerrun.aws.json``.
-``--ebext``: Directory path used as ``.ebextensions/``
-``--profile``: Configured profile for AWS.
+* ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
+* ``--ebext``: Directory path used as ``.ebextensions/``
+* ``--profile``: Configured profile for AWS.
