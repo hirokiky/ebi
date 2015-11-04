@@ -14,20 +14,43 @@ Requires Python>=3.5
 Usage
 -----
 
+deploy
+~~~~~~
+
 To deploy app, just type it on project root::
 
-    $ ebi <app_name>
+    $ ebi deploy <app_name> <env_name>
 
 This will
 
 1. Create zip file including ``Dockerrun.aws.json`` and ``.ebextensions``
 2. Uploading zip to S3 as same directory as ``awsebcli``.
-3. Deploying app
+3. Deploying app (by calling ``eb deploy`` with uploaded --version)
 
-More options
-------------
+options:
 
 * ``--version``: version label for app. default is timestamp.
 * ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
+
+create
+~~~~~~
+
+To create app, just type it on project root::
+
+    $ ebi create <app_name> <env_name> <cname_prefix>
+
+This will
+
+1. Create zip file including ``Dockerrun.aws.json`` and ``.ebextensions``
+2. Uploading zip to S3 as same directory as ``awsebcli``.
+3. Creating app (by calling ``eb create`` with uploaded --version)
+
+options:
+
+* ``--version``: version label for app. default is timestamp.
+* ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
+* ``--ebext``: Directory path used as ``.ebextensions/``
+* ``--profile``: Configured profile for AWS.
+* ``--cfg``: Configuration template to use.
