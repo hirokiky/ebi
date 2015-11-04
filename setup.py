@@ -1,5 +1,6 @@
 from setuptools import setup
 
+long_description = open('./README.rst').read()
 
 setup(
     name='ebi',
@@ -7,6 +8,12 @@ setup(
     install_requires=[
         'awsebcli==3.5.5',
     ],
+    description='Simple CLI tool for ElasticBeanstalk',
+    long_description=long_description,
+    url='https://github.com/hirokiky/ebi',
+    author='Hiroki KIYOHARA',
+    author_email='hirokiky@gmail.com',
+    license='MIT',
     packages=['ebi'],
     entry_points={
         'console_scripts': [
