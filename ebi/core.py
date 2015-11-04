@@ -71,6 +71,7 @@ def main():
     parser_create.add_argument('cname', help='cname for created server')
     parser_create.add_argument('--version', help='Version label you want to specify')
     parser_create.add_argument('--profile', help='AWS account')
+    parser_create.add_argument('--region', help='AWS region')
     parser_create.add_argument('--dockerrun', default=DOCKERRUN_NAME,
                                help='Path to file used as Dockerrun.aws.json')
     parser_create.add_argument('--ebext', default=DOCKEREXT_NAME,
@@ -82,6 +83,7 @@ def main():
     parser_deploy.add_argument('env_name', help='Environ name to deploy')
     parser_deploy.add_argument('--version', help='Version label you want to specify')
     parser_deploy.add_argument('--profile', help='AWS account')
+    parser_deploy.add_argument('--region', help='AWS region')
     parser_deploy.add_argument('--dockerrun', default=DOCKERRUN_NAME,
                                help='Path to file used as Dockerrun.aws.json')
     parser_deploy.add_argument('--ebext', default=DOCKEREXT_NAME,
@@ -98,10 +100,12 @@ def main():
     else:
         version = str(int(time.time()))
 
+    conf = {}
     if parsed.profile:
-        session = boto3.session.Session(profile_name=parsed.profile)
-    else:
-        session = boto3.session.Session()
+        conf['profile_name'] = parsed.profile
+    if parsed.region:
+        conf['region_name'] = parsed.region
+    session = boto3.session.Session(**conf)
     eb = session.client('elasticbeanstalk')
 
     ebaws.set_region(session._session.get_config_variable('region'))
@@ -125,8 +129,12 @@ def main():
 
     if parsed.sub == 'deploy':
         logger.info('Ok, now deploying the version %s for %s', version, parsed.env_name)
-        sys.exit(subprocess.call(['eb', 'deploy', parsed.env_name, '--version=' + version,
-                                  '--profile=' + session.profile_name]))
+        payload = ['eb', 'deploy', parsed.env_name,
+                   '--version=' + version,
+                   '--profile=' + session.profile_name]
+        if parsed.region:
+            payload.append('--region=' + parsed.region)
+        sys.exit(subprocess.call(payload))
     elif parsed.sub == 'create':
         logger.info('Ok, now creating version %s or environment %s', version, parsed.env_name)
         payload = ['eb', 'create', parsed.env_name,
@@ -135,4 +143,6 @@ def main():
                    '--profile=' + session.profile_name]
         if parsed.cfg:
             payload.append('--cfg=' + parsed.cfg)
+        if parsed.region:
+            payload.append('--region=' + parsed.region)
         sys.exit(subprocess.call(payload))

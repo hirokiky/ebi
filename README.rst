@@ -33,6 +33,7 @@ options:
 * ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
+* ``--region``: region for AWS.
 
 create
 ~~~~~~
@@ -53,4 +54,5 @@ options:
 * ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
+* ``--region``: region for AWS.
 * ``--cfg``: Configuration template to use.
