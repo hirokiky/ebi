@@ -22,8 +22,7 @@ logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
 
 
-def make_version(version_label: str,
-                 dockerrun:str=DOCKERRUN_NAME, ebext:str=DOCKEREXT_NAME) -> str:
+def make_version(version_label, dockerrun=DOCKERRUN_NAME, ebext=DOCKEREXT_NAME):
     """ Making zip file to upload for ElasticBeanstalk
 
     :param version_label: will be name of the created zip file
@@ -33,15 +32,18 @@ def make_version(version_label: str,
 
     :return: File path to created zip file (current directory).
     """
-    with tempfile.TemporaryDirectory() as tempd:
+    tempd = tempfile.mkdtemp()
+    try:
         deploy_dockerrun = os.path.join(tempd, DOCKERRUN_NAME)
         deploy_ebext = os.path.join(tempd, DOCKEREXT_NAME)
         shutil.copyfile(dockerrun, deploy_dockerrun)
         shutil.copytree(ebext, deploy_ebext)
         return shutil.make_archive(version_label, 'zip', root_dir=tempd)
+    finally:
+        shutil.rmtree(tempd)
 
 
-def upload_app_version(app_name: str, bundled_zip: str) -> (str, str):
+def upload_app_version(app_name, bundled_zip):
     """ Uploading zip file of app version to S3
     :param app_name: application name to deploy
     :param bundled_zip: String path to zip file
