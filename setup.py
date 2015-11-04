@@ -9,7 +9,7 @@ setup(
         'awsebcli==3.5.5',
         'boto3==1.2.1',
     ],
-    description='Simple CLI tool for ElasticBeanstalk',
+    description='Simple CLI tool for ElasticBeanstalk with Docker',
     long_description=long_description,
     url='https://github.com/hirokiky/ebi',
     author='Hiroki KIYOHARA',

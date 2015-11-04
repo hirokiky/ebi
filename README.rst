@@ -1,7 +1,7 @@
 EBI
 ===
 
-Elastic Beanstalk Intelligence, Simple CLI tool for ElasticBeanstalk.
+Elastic Beanstalk Intelligence, Simple CLI tool for ElasticBeanstalk with Docker.
 
 * Deploying apps more intuitively
 
