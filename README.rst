@@ -9,6 +9,14 @@ Elastic Beanstalk Intelligence, Simple CLI tool for ElasticBeanstalk with Docker
   * Switch-able ``Dockerrun.aws.json``
   * Switch-able ``.ebextensions/``
 
+Install
+-------
+
+::
+
+    pip install ebi
+
+
 Requires Python>=3.5
 
 Usage
