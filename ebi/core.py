@@ -67,6 +67,7 @@ def main():
 
     parser_create.add_argument('app_name', help='Application name to create')
     parser_create.add_argument('env_name', help='Environ name to deploy')
+    parser_create.add_argument('cname', help='cname for created server')
     parser_create.add_argument('--version', help='Version label you want to specify')
     parser_create.add_argument('--profile', help='AWS account')
     parser_create.add_argument('--dockerrun', default=DOCKERRUN_NAME,
@@ -78,7 +79,6 @@ def main():
 
     parser_deploy.add_argument('app_name', help='Application name to deploy')
     parser_deploy.add_argument('env_name', help='Environ name to deploy')
-    parser_deploy.add_argument('cname', help='cname for created server')
     parser_deploy.add_argument('--version', help='Version label you want to specify')
     parser_deploy.add_argument('--profile', help='AWS account')
     parser_deploy.add_argument('--dockerrun', default=DOCKERRUN_NAME,
