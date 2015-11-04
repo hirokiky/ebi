@@ -16,7 +16,9 @@ DOCKERRUN_NAME = 'Dockerrun.aws.json'
 DOCKEREXT_NAME = '.ebextensions/'
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('ebi')
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler())
 
 
 def make_version(version_label: str,
@@ -59,14 +61,36 @@ def main():
     """ Main function called from console_scripts
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('app_name', help='Application name to deploy')
-    parser.add_argument('--version', help='Version label you want to specify')
-    parser.add_argument('--profile', help='AWS account')
-    parser.add_argument('--dockerrun', default=DOCKERRUN_NAME,
-                        help='Path to file used as Dockerrun.aws.json')
-    parser.add_argument('--ebext', default=DOCKEREXT_NAME,
-                        help='Path to directory used as .ebextensions/')
+    subparsers = parser.add_subparsers()
+    parser_create = subparsers.add_parser('create')
+    parser_deploy = subparsers.add_parser('deploy')
+
+    parser_create.add_argument('app_name', help='Application name to create')
+    parser_create.add_argument('env_name', help='Environ name to deploy')
+    parser_create.add_argument('--version', help='Version label you want to specify')
+    parser_create.add_argument('--profile', help='AWS account')
+    parser_create.add_argument('--dockerrun', default=DOCKERRUN_NAME,
+                               help='Path to file used as Dockerrun.aws.json')
+    parser_create.add_argument('--ebext', default=DOCKEREXT_NAME,
+                               help='Path to directory used as .ebextensions/')
+    parser_create.add_argument('--cfg', help='Configuration template name to eb create')
+    parser_create.set_defaults(sub='create')
+
+    parser_deploy.add_argument('app_name', help='Application name to deploy')
+    parser_deploy.add_argument('env_name', help='Environ name to deploy')
+    parser_deploy.add_argument('cname', help='cname for created server')
+    parser_deploy.add_argument('--version', help='Version label you want to specify')
+    parser_deploy.add_argument('--profile', help='AWS account')
+    parser_deploy.add_argument('--dockerrun', default=DOCKERRUN_NAME,
+                               help='Path to file used as Dockerrun.aws.json')
+    parser_deploy.add_argument('--ebext', default=DOCKEREXT_NAME,
+                               help='Path to directory used as .ebextensions/')
+    parser_deploy.set_defaults(sub='deploy')
     parsed = parser.parse_args()
+
+    if not hasattr(parsed, 'sub'):
+        parser.print_help()
+        return
 
     if parsed.version:
         version = parsed.version
@@ -98,6 +122,16 @@ def main():
         }
     )
 
-    logger.info('Ok, now deploying the version %s for %s', version, parsed.app_name)
-    subprocess.call(['eb', 'deploy', parsed.app_name, '--version=' + version,
-                     '--profile=' + session.profile_name])
+    if parsed.sub == 'deploy':
+        logger.info('Ok, now deploying the version %s for %s', version, parsed.env_name)
+        subprocess.call(['eb', 'deploy', parsed.env_name, '--version=' + version,
+                         '--profile=' + session.profile_name])
+    elif parsed.sub == 'create':
+        logger.info('Ok, now creating version %s or environment %s', version, parsed.env_name)
+        payload = ['eb', 'create', parsed.env_name,
+                   '--version=' + version,
+                   '--cname=' + parsed.cname,
+                   '--profile=' + session.profile_name]
+        if parsed.cfg:
+            payload.append('--cfg=' + parsed.cfg)
+        subprocess.call(payload)
