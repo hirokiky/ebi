@@ -1,10 +1,10 @@
 import argparse
-from datetime import datetime
 import logging
 import os
 import shutil
 import subprocess
 import tempfile
+import time
 
 import boto3
 from ebcli.lib import aws as ebaws
@@ -71,7 +71,7 @@ def main():
     if parsed.version:
         version = parsed.version
     else:
-        version = datetime.now().strftime('%Y%m%d%H%M%S')
+        version = str(int(time.time()))
 
     if parsed.profile:
         session = boto3.session.Session(profile_name=parsed.profile)
