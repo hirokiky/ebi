@@ -3,6 +3,7 @@ import logging
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
 
@@ -124,8 +125,8 @@ def main():
 
     if parsed.sub == 'deploy':
         logger.info('Ok, now deploying the version %s for %s', version, parsed.env_name)
-        subprocess.call(['eb', 'deploy', parsed.env_name, '--version=' + version,
-                         '--profile=' + session.profile_name])
+        sys.exit(subprocess.call(['eb', 'deploy', parsed.env_name, '--version=' + version,
+                                  '--profile=' + session.profile_name]))
     elif parsed.sub == 'create':
         logger.info('Ok, now creating version %s or environment %s', version, parsed.env_name)
         payload = ['eb', 'create', parsed.env_name,
@@ -134,4 +135,4 @@ def main():
                    '--profile=' + session.profile_name]
         if parsed.cfg:
             payload.append('--cfg=' + parsed.cfg)
-        subprocess.call(payload)
+        sys.exit(subprocess.call(payload))
