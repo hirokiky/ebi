@@ -10,10 +10,23 @@ from .. import appversion
 logger = logging.getLogger(__name__)
 
 
+def make_eb_hostname(cname_prefix):
+    return cname_prefix + '.elasticbeanstalk.com'
+
+
 def get_environ_name_for_cname(app_name, cname):
     """ Determine environment name having :param cname: on :param app_name:.
     """
-    return ''
+    eb = boto3.client('elasticbeanstalk')
+    res = eb.describe_environments(ApplicationName=app_name)
+
+    if res['ResponseMetadata']['HTTPStatusCode'] != 200:
+        raise ValueError('ElasticBeanstalk client did not return 200 for describing environments')
+
+    for env_data in res['Environments']:
+        if env_data['CNAME'] == make_eb_hostname(cname):
+            return env_data['EnvironmentName']
+    raise ValueError('Could not find environment for applied app_name and cname')
 
 
 def generate_green_environment_names(base_env_name, base_cname):
