@@ -90,6 +90,11 @@ def main(parsed):
     # Swapping
     ###
 
+    if parsed.noswap:
+        logger.info('DONE successfully without Skipping. just created green environment %s',
+                    green_environment_name)
+        return
+
     eb = boto3.client('elasticbeanstalk')
     logger.info('Swapping blue %s => green %s',
                 blue_environment_name, green_environment_name)
@@ -103,6 +108,8 @@ def main(parsed):
 def apply_args(parser):
     parser.add_argument('app_name', help='Application name to deploy')
     parser.add_argument('cname', help='cname prefix of Blue environment')
+    parser.add_argument('--noswap', help='Without swapping, it will just create green environment',
+                        action='store_true', default=False)
     parser.add_argument('--version', help='Version label you want to specify')
     parser.add_argument('--profile', help='AWS account')
     parser.add_argument('--region', help='AWS region')

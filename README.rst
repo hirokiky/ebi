@@ -82,6 +82,7 @@ This will
 
 options:
 
+* ``--noswap``: Skip swapping to just create green environment.
 * ``--version``: version label for app. default is timestamp.
 * ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
 * ``--ebext``: Directory path used as ``.ebextensions/``
