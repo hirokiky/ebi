@@ -24,7 +24,7 @@ def generate_green_environment_names(base_env_name, base_cname):
     :return: tuple of environment name and cname
     """
     t = str(int(time.time()))
-    return base_env_name + t, base_cname + t
+    return base_env_name + '-' + t, base_cname + '-' + t
 
 
 def main(parsed):
