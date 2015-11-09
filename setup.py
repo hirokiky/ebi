@@ -1,10 +1,10 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 long_description = open('./README.rst').read()
 
 setup(
     name='ebi',
-    version='0.2.5',
+    version='0.2.6',
     install_requires=[
         'awsebcli==3.5.5',
         'boto3==1.2.1',
@@ -15,7 +15,7 @@ setup(
     author='Hiroki KIYOHARA',
     author_email='hirokiky@gmail.com',
     license='MIT',
-    packages=['ebi'],
+    packages=find_packages(),
     entry_points={
         'console_scripts': [
             'ebi = ebi.core:main',
