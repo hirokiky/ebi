@@ -46,7 +46,7 @@ def main(parsed):
     ###
     blue_environment_name = get_environ_name_for_cname(parsed.app_name, parsed.cname)
 
-    green_environment_name, green_cname = generate_green_environment_names(parsed.env_name,
+    green_environment_name, green_cname = generate_green_environment_names(blue_environment_name,
                                                                            parsed.cname)
 
     payload = ['eb', 'clone', blue_environment_name,
@@ -102,7 +102,6 @@ def main(parsed):
 
 def apply_args(parser):
     parser.add_argument('app_name', help='Application name to deploy')
-    parser.add_argument('env_name', help='Environ name to deploy')
     parser.add_argument('cname', help='cname prefix of Blue environment')
     parser.add_argument('--version', help='Version label you want to specify')
     parser.add_argument('--profile', help='AWS account')
