@@ -91,7 +91,7 @@ def main(parsed):
     ###
 
     if parsed.noswap:
-        logger.info('DONE successfully without Skipping. just created green environment %s',
+        logger.info('DONE successfully without Swapping. just created green environment %s',
                     green_environment_name)
         return
 
