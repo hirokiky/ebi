@@ -29,40 +29,16 @@ def get_environ_name_for_cname(app_name, cname):
     raise ValueError('Could not find environment for applied app_name and cname')
 
 
-def generate_green_environment_names(base_env_name, base_cname):
-    """ Generate environment name and cname for applied env.
-    'uploader-api', 'myservice-uploader'
-        =>  'uploader-api-1446805048', 'myservice-uploader-1446805048'
-
-    :return: tuple of environment name and cname
-    """
-    t = str(int(time.time()))
-    return base_env_name + '-' + t, base_cname + '-' + t
-
-
 def main(parsed):
-    ###
-    # Cloning
-    ###
-    blue_environment_name = get_environ_name_for_cname(parsed.app_name, parsed.cname)
-
-    green_environment_name, green_cname = generate_green_environment_names(blue_environment_name,
-                                                                           parsed.cname)
-
-    payload = ['eb', 'clone', blue_environment_name,
-               '--exact',
-               '--clone_name=' + green_environment_name,
-               '--cname=' + green_cname]
-    if parsed.profile:
-        payload.append('--profile=' + parsed.profile)
-    if parsed.region:
-        payload.append('--region=' + parsed.region)
-
-    r = subprocess.call(payload)
-    if r != 0:
-        logger.error("Failed to clone environment %s", blue_environment_name)
-        sys.exit(r)
-    logger.info('Cloned environment %s => %s', blue_environment_name, green_environment_name)
+    master_env_name = get_environ_name_for_cname(parsed.app_name, parsed.cname)
+    if parsed.blue_env == master_env_name:
+        primary_env_name = parsed.blue_env
+        secondary_env_name = parsed.green_env
+    elif parsed.green_env == master_env_name:
+        primary_env_name = parsed.green_env
+        secondary_env_name = parsed.blue_env
+    else:
+        raise ValueError('master env for cname {p.cname} was not in {p.app_name}'.format(p=parsed))
 
     ###
     # Deploying
@@ -73,8 +49,8 @@ def main(parsed):
         version = str(int(time.time()))
 
     appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.ebext)
-    logger.info('Ok, now deploying the version %s for %s', version, green_environment_name)
-    payload = ['eb', 'deploy', green_environment_name,
+    logger.info('Ok, now deploying the version %s for %s', version, secondary_env_name)
+    payload = ['eb', 'deploy', secondary_env_name,
                '--version=' + version]
     if parsed.profile:
         payload.append('--profile=' + parsed.profile)
@@ -83,7 +59,7 @@ def main(parsed):
     r = subprocess.call(payload)
     if r != 0:
         logger.error("Failed to deploy version %s to environment %s",
-                     version, green_environment_name)
+                     version, secondary_env_name)
         sys.exit(r)
 
     ###
@@ -91,24 +67,27 @@ def main(parsed):
     ###
 
     if parsed.noswap:
-        logger.info('DONE successfully without Swapping. just created green environment %s',
-                    green_environment_name)
+        logger.info('DONE successfully without Swapping. just deployed secondary environment %s',
+                    secondary_env_name)
         return
 
     eb = boto3.client('elasticbeanstalk')
-    logger.info('Swapping blue %s => green %s',
-                blue_environment_name, green_environment_name)
-    eb.swap_environment_cnames(SourceEnvironmentName=green_environment_name,
-                               DestinationEnvironmentName=blue_environment_name)
-    logger.info('DONE successfully. Blue %s => Green %s.'
-                'If no problem, terminate Blue. If problem, re-swap Green to Blue',
-                blue_environment_name, green_environment_name)
+    logger.info('Swapping primary %s => new primary %s',
+                primary_env_name, secondary_env_name)
+    eb.swap_environment_cnames(SourceEnvironmentName=primary_env_name,
+                               DestinationEnvironmentName=secondary_env_name)
+    logger.info('DONE successfully. Primary %s => new primary %s.'
+                'If problem, re-swap new primary to primary',
+                primary_env_name, secondary_env_name)
 
 
 def apply_args(parser):
     parser.add_argument('app_name', help='Application name to deploy')
-    parser.add_argument('cname', help='cname prefix of Blue environment')
-    parser.add_argument('--noswap', help='Without swapping, it will just create green environment',
+    parser.add_argument('green_env', help='green env name')
+    parser.add_argument('blue_env', help='blue env name')
+    parser.add_argument('cname', help='cname prefix for primary environment')
+    parser.add_argument('--noswap', help='Without swapping, it will just deploy for secondary'
+                                         'environment',
                         action='store_true', default=False)
     parser.add_argument('--version', help='Version label you want to specify')
     parser.add_argument('--profile', help='AWS account')
