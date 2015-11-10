@@ -80,6 +80,8 @@ This will
    (by calling ``eb deploy`` with uploaded --version)
 4. Apply cname for deployed environment
 
+::
+
     +-------+              +------+
     | green |              | blue |
     +-------+              +------+
