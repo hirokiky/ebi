@@ -8,6 +8,7 @@ import boto3
 from ebcli.lib import aws as ebaws
 
 from .commands.bgdeploy import apply_args as apply_args_bgdeploy
+from .commands.clonedeploy import apply_args as apply_args_clonedeploy
 from .commands.create import apply_args as apply_args_create
 from .commands.deploy import apply_args as apply_args_deploy
 
@@ -23,10 +24,12 @@ def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
     parser_bgdeploy = subparsers.add_parser('bgdeploy')
+    parser_clonedeploy = subparsers.add_parser('clonedeploy')
     parser_create = subparsers.add_parser('create')
     parser_deploy = subparsers.add_parser('deploy')
 
     apply_args_bgdeploy(parser_bgdeploy)
+    apply_args_clonedeploy(parser_clonedeploy)
     apply_args_create(parser_create)
     apply_args_deploy(parser_deploy)
 
