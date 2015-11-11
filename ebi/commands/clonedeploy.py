@@ -42,6 +42,7 @@ def main(parsed):
     # Cloning
     ###
     payload = ['eb', 'clone', master_env_name,
+               '--exact',
                '--clone_name=' + next_env_name,
                '--cname=' + next_env_cname]
     if parsed.profile:
