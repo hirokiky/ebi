@@ -98,4 +98,37 @@ options:
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
 * ``--region``: region for AWS.
+
+clonedeploy
+~~~~~~~~~~~
+
+To deploy app with cloning, just type it on project root::
+
+    $ ebi clonedeploy <app_name> <env_name> <green_env_name> <cname_prefix>
+
+This will
+
+1. Create clone of master environment for next version environment.
+2. Create zip file including ``Dockerrun.aws.json`` and ``.ebextensions``
+3. Uploading zip to S3 as same directory as ``awsebcli``.
+4. Deploy new version to next version (by calling ``eb deploy`` with uploaded --version)
+5. Apply master cname for deployed (next version) environment
+
+::
+
+    +--------+              +----------+
+    | master |  =1.Clone=>  | next ver |
+    +--------+              +----------+
+     master.elastic...com     master-<timestamp>.elastic...com
+                              ^
+                              |
+                          4. deploy!
+
+
+* ``--noswap``: Skip swapping to just deploy secondary environment.
+* ``--version``: version label for app. default is timestamp.
+* ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
+* ``--ebext``: Directory path used as ``.ebextensions/``
+* ``--profile``: Configured profile for AWS.
+* ``--region``: region for AWS.
 * ``--cfg``: Configuration template to use.
