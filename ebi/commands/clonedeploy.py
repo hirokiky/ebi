@@ -43,6 +43,7 @@ def main(parsed):
     ###
     payload = ['eb', 'clone', master_env_name,
                '--exact',
+               '--timeout=20',  # Basically, it takes a while.
                '--clone_name=' + next_env_name,
                '--cname=' + next_env_cname]
     if parsed.profile:
