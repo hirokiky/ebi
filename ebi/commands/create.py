@@ -18,6 +18,7 @@ def main(parsed):
 
     logger.info('Ok, now creating version %s for environment %s', version, parsed.env_name)
     payload = ['eb', 'create', parsed.env_name,
+               '--timeout=45',
                '--version=' + version,
                '--cname=' + parsed.cname]
     if parsed.profile:
