@@ -131,4 +131,4 @@ This will
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
 * ``--region``: region for AWS.
-* ``--cfg``: Configuration template to use.
+
