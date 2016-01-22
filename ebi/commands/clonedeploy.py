@@ -29,8 +29,19 @@ def get_environ_name_for_cname(app_name, cname):
     raise ValueError('Could not find environment for applied app_name and cname')
 
 
+def base36encode(num):
+    result = ""
+    base = 36
+    nchar = '0123456789abcdefghijklmnopqrstuvwxyz'
+    n = int(num)
+    while n > 0:
+        result = nchar[n % base] + result
+        n //= base
+    return result
+
+
 def make_next_env_names(base_env_name, base_cname):
-    suffix = '-' + str(int(time.time()))
+    suffix = '-' + str(base36encode(int(time.time())))
     return base_env_name + suffix, base_cname + suffix
 
 
