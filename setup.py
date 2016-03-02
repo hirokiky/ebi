@@ -4,10 +4,10 @@ long_description = open('./README.rst').read()
 
 setup(
     name='ebi',
-    version='0.5',
+    version='0.5.1',
     install_requires=[
-        'awsebcli==3.5.5',
-        'boto3==1.2.1',
+        'awsebcli==3.7.3',
+        'boto3==1.2.6',
     ],
     description='Simple CLI tool for ElasticBeanstalk with Docker',
     long_description=long_description,
