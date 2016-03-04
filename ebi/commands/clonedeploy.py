@@ -12,6 +12,10 @@ logger = logging.getLogger(__name__)
 
 def get_environ_name_for_cname(app_name, cname):
     """ Determine environment name having :param cname: on :param app_name:.
+
+    If cname duplicated, longer one will be returned.
+    For example, there are myenv.ap-northeast-1.elasticbeanstalk.com and myenv.elasticbeanstal.com,
+    myenv.ap-northeast-1.elasticbeanstal.com will be returned.
     """
     eb = boto3.client('elasticbeanstalk')
     res = eb.describe_environments(ApplicationName=app_name)
