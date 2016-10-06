@@ -6,8 +6,8 @@ setup(
     name='ebi',
     version='0.6.2',
     install_requires=[
-        'awsebcli==3.7.3',
-        'boto3==1.2.6',
+        'awsebcli>=3.7.3,<4',
+        'boto3>==1.2.6,<2',
     ],
     description='Simple CLI tool for ElasticBeanstalk with Docker',
     long_description=long_description,
