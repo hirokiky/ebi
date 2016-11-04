@@ -22,6 +22,8 @@ def main(parsed):
         payload.append('--profile=' + parsed.profile)
     if parsed.region:
         payload.append('--region=' + parsed.region)
+    if parsed.staged:
+        payload.append('--staged')
     sys.exit(subprocess.call(payload))
 
 
@@ -33,4 +35,6 @@ def apply_args(parser):
     parser.add_argument('--region', help='AWS region')
     parser.add_argument('--dockerrun', help='Path to file used as Dockerrun.aws.json')
     parser.add_argument('--ebext', help='Path to directory used as .ebextensions/')
+    parser.add_argument('--staged', action='store_true', default=False,
+                        help='deploy files staged in git rather than the HEAD commit')
     parser.set_defaults(func=main)
