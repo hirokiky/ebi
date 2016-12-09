@@ -55,6 +55,8 @@ def main(parsed):
         payload.append('--profile=' + parsed.profile)
     if parsed.region:
         payload.append('--region=' + parsed.region)
+    if parsed.timeout:
+        payload.append('--timeout=' + parsed.timeout)
     r = subprocess.call(payload)
     if r != 0:
         logger.error("Failed to deploy version %s to environment %s",
@@ -93,4 +95,5 @@ def apply_args(parser):
     parser.add_argument('--region', help='AWS region')
     parser.add_argument('--dockerrun', help='Path to file used as Dockerrun.aws.json')
     parser.add_argument('--ebext', help='Path to directory used as .ebextensions/')
+    parser.add_argument('--timeout', help='The number of minutes before the command times out.')
     parser.set_defaults(func=main)
