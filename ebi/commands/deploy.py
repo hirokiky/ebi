@@ -24,6 +24,10 @@ def main(parsed):
         payload.append('--region=' + parsed.region)
     if parsed.staged:
         payload.append('--staged')
+
+    payload.append('--debug')
+    payload.append('-v')
+                 
     sys.exit(subprocess.call(payload))
 
 
