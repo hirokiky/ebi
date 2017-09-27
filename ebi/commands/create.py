@@ -1,9 +1,11 @@
 import logging
+import os
 import subprocess
 import sys
 import time
 
 from .. import appversion
+from ..utils import merge_configs
 
 logger = logging.getLogger(__name__)
 
@@ -23,11 +25,22 @@ def main(parsed):
                '--cname=' + parsed.cname]
     if parsed.profile:
         payload.append('--profile=' + parsed.profile)
+
     if parsed.cfg:
-        payload.append('--cfg=' + parsed.cfg)
+        if len(parsed.cfg) == 1:
+            payload.append('--cfg=' + parsed.cfg[0])
+        else:
+            temp_cfg_path = merge_configs(parsed.cfg)
+            logger.info('Set multiple cfgs, merged as: %s', temp_cfg_path)
+            payload.append('--cfg=' + temp_cfg_path)
     if parsed.region:
         payload.append('--region=' + parsed.region)
-    sys.exit(subprocess.call(payload))
+    try:
+        sys.exit(subprocess.call(payload))
+    finally:
+        if os.path.exists(temp_cfg_path):
+            os.remove(temp_cfg_path)
+            logger.info('removed local temporary cfg: %s', temp_cfg_path)
 
 
 def apply_args(parser):
@@ -39,5 +52,5 @@ def apply_args(parser):
     parser.add_argument('--region', help='AWS region')
     parser.add_argument('--dockerrun', help='Path to file used as Dockerrun.aws.json')
     parser.add_argument('--ebext', help='Path to directory used as .ebextensions/')
-    parser.add_argument('--cfg', help='Configuration template name to eb create')
+    parser.add_argument('--cfg', nargs='*', help='Configuration template names to eb create')
     parser.set_defaults(func=main)
