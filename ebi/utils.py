@@ -2,6 +2,8 @@ import os
 
 from functools import reduce
 
+from ebcli.operations import saved_configs
+
 import yaml
 
 
@@ -20,7 +22,7 @@ def merge_configs(cfg_names):
     process_cfg = _compose(
         yaml.load,
         _read_file,
-        _make_fullpath,
+        saved_configs.resolve_config_location
     )
 
     configs = [process_cfg(cfg_name) for cfg_name in cfg_names]
@@ -50,8 +52,6 @@ def _compose(*functions):
     compose2 = lambda f, g: (lambda x: f(g(x)))
     return reduce(compose2, functions, initiator)
 
-def _make_fullpath(cfg):
-    return os.path.join(CONFIG_DIR, cfg + CONFIG_EXT)
 
 def _merge_dict(source, destination):
     for key, value in source.items():
