@@ -8,7 +8,7 @@ setup(
     install_requires=[
         'awsebcli>=3.7.3,<4',
         'boto3>=1.2.6,<2',
-        'PyYAML>=3.12,4',
+        'PyYAML>=3.12,<4',
     ],
     description='Simple CLI tool for ElasticBeanstalk with Docker',
     long_description=long_description,
