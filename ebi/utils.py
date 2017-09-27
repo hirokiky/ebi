@@ -16,8 +16,10 @@ CONFIG_NAME_DELIMITER = '__'
 def merge_configs(cfg_names):
     """Merge config files and save as a single ymlfile.
 
-    :param cfg_names: List of config_name string, following ebcli's naming rule
-    :return: String of merged file path, with dir and extenstion
+    :param cfg_names: List of config_name string, without dir or extension
+    :return: Tuple of (String of merged file location with dir and extenstion,
+                       String of merged file name without dir or extenstion)
+    ['ourproj', 'myenv'] -> ('/home/user/..../ourproj__myenv.cfg.yml', 'ourproj__myenv')
     """
     process_cfg = _compose(
         yaml.load,
@@ -28,11 +30,12 @@ def merge_configs(cfg_names):
     configs = [process_cfg(cfg_name) for cfg_name in cfg_names]
     merged = reduce(lambda a, b: _merge_dict(b, a), configs)
 
-    temp_filename = CONFIG_NAME_DELIMITER.join(cfg_names) + CONFIG_EXT
-    temp_filepath = os.path.join(os.getcwd(),
+    temp_cfg_name = CONFIG_NAME_DELIMITER.join(cfg_names)
+    temp_filename =  temp_cfg_name + CONFIG_EXT
+    temp_cfg_location = os.path.join(os.getcwd(),
                                  CONFIG_DIR, SAVED_CONFIG_DIR, temp_filename)
     _make_temp_ymlfile(merged, temp_filepath)
-    return temp_filepath
+    return temp_cfg_location, temp_cfg_name
 
 
 def _make_temp_ymlfile(data, filepath):
