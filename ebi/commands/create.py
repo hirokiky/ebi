@@ -30,9 +30,9 @@ def main(parsed):
         if len(parsed.cfg) == 1:
             payload.append('--cfg=' + parsed.cfg[0])
         else:
-            temp_cfg_path = merge_configs(parsed.cfg)
-            logger.info('Set multiple cfgs, merged as: %s', temp_cfg_path)
-            payload.append('--cfg=' + temp_cfg_path)
+            temp_cfg_location, temp_cfg_name = merge_configs(parsed.cfg)
+            logger.info('Set multiple cfgs, merged as: %s', temp_cfg_location)
+            payload.append('--cfg=' + temp_cfg_name)
     if parsed.region:
         payload.append('--region=' + parsed.region)
     try:
