@@ -38,9 +38,9 @@ def main(parsed):
     try:
         sys.exit(subprocess.call(payload))
     finally:
-        if os.path.exists(temp_cfg_path):
-            os.remove(temp_cfg_path)
-            logger.info('removed local temporary cfg: %s', temp_cfg_path)
+        if len(parsed.cfg) > 1 and os.path.exists(temp_cfg_location):
+            os.remove(temp_cfg_location)
+            logger.info('removed local temporary cfg: %s', temp_cfg_location)
 
 
 def apply_args(parser):
