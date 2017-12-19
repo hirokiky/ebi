@@ -28,6 +28,21 @@ def get_environ_name_for_cname(app_name, cname):
     raise ValueError('Could not find environment for applied app_name and cname')
 
 
+def get_primary_env_capacity(group_name):
+    autoscale = boto3.client('autoscaling')
+    as_json = autoscale.describe_auto_scaling_groups(
+        AutoScalingGroupNames=[group_name])
+    number = as_json['AutoScalingGroups'][0]['DesiredCapacity']
+    min_number = as_json['AutoScalingGroups'][0]['MinSize']
+    # Skip when then number ob runnning instances equal to the min size.
+    if number == min_number:
+        return
+    # Return half of value when the number of running instances is twice as larger than the min number.
+    if number > min_number * 2:
+        return int(number / 2)
+    return number
+
+
 def main(parsed):
     master_env_name = get_environ_name_for_cname(parsed.app_name, parsed.cname)
     if parsed.blue_env == master_env_name:
@@ -65,18 +80,25 @@ def main(parsed):
     # Set desired capacity
     ###
     if parsed.capacity:
-        number = parsed.capacity
         autoscale = boto3.client('autoscaling')
         as_json = autoscale.describe_tags(
             Filters=[
                 {
                     'Name': 'Value',
-                    'Values': [secondary_env_name]
+                    'Values': [secondary_env_name, primary_env_name]
                 },
             ]
         )
-        as_group_name = as_json['Tags'][0]['ResourceId']
-        autoscale.update_auto_scaling_group(AutoScalingGroupName=as_group_name, DesiredCapacity=number)
+        for x in as_json['Tags']:
+            if x['Key'] == 'Name' and x['Value'] == secondary_env_name:
+                secondary_group_name = x['ResourceId']
+            elif x['Key'] == 'Name' and x['Value'] == primary_env_name:
+                primary_group_name = x['ResourceId']
+        number = get_primary_env_capacity(primary_group_name)
+        if not number:
+            logger.info('The primary instance capacity is equal to the min size.')
+
+        autoscale.update_auto_scaling_group(AutoScalingGroupName=secondary_group_name, DesiredCapacity=number)
         logger.info('The number of instance in %s was set to %d.', secondary_env_name, number)
 
     ###
@@ -110,7 +132,7 @@ def apply_args(parser):
     parser.add_argument('--region', help='AWS region')
     parser.add_argument('--dockerrun', help='Path to file used as Dockerrun.aws.json')
     parser.add_argument('--ebext', help='Path to directory used as .ebextensions/')
-    parser.add_argument('--capacity', help='The number of instances.', default=10, type=int)
+    parser.add_argument('--capacity', help='The number of instances.')
     parser.set_defaults(func=main)
     parsed = parser.parse_args()
     main(parsed)
