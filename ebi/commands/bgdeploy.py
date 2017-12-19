@@ -134,6 +134,4 @@ def apply_args(parser):
     parser.add_argument('--ebext', help='Path to directory used as .ebextensions/')
     parser.add_argument('--capacity', help='The number of instances.')
     parser.set_defaults(func=main)
-    parsed = parser.parse_args()
-    main(parsed)
 
