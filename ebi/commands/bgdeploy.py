@@ -40,7 +40,6 @@ def get_primary_env_capacity(group_name):
     # Return half of value when the number of running instances is twice as larger than the min number.
     if number > min_number * 2:
         return int(number / 2)
-    return number
 
 
 def main(parsed):
