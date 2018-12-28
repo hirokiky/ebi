@@ -61,7 +61,12 @@ def main(parsed):
     else:
         version = str(int(time.time()))
 
-    appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.ebext)
+    if parsed.description:
+        description = parsed.description
+    else:
+        description = ''
+
+    appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.ebext, description)
     logger.info('Ok, now deploying the version %s for %s', version, secondary_env_name)
     payload = ['eb', 'deploy', secondary_env_name,
                '--version=' + version]
@@ -127,6 +132,7 @@ def apply_args(parser):
                                          'environment',
                         action='store_true', default=False)
     parser.add_argument('--version', help='Version label you want to specify')
+    parser.add_argument('--description', help='Description for this version')
     parser.add_argument('--profile', help='AWS account')
     parser.add_argument('--region', help='AWS region')
     parser.add_argument('--dockerrun', help='Path to file used as Dockerrun.aws.json')
