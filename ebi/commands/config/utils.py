@@ -18,7 +18,9 @@ class TemporaryMergedYaml:
         ]
         self.cfg = self.__merge(cfgs)
         self.cfg_path = f'{beanstalk_directory}{cfg_name}.cfg.yml'
-        self.tempfile = self.__init_tempfile(self.cfg, self.cfg_path)
+        self.tempfile, self.delete = self.__init_tempfile(
+            self.cfg, self.cfg_path
+        )
 
     def __enter__(self):
         return self
@@ -31,7 +33,8 @@ class TemporaryMergedYaml:
         try:
             ProjectRoot.traverse()
             self.tempfile.close()
-            os.remove(self.cfg_path)
+            if self.delete:
+                os.remove(self.cfg_path)
         finally:
             os.chdir(cwd)
 
@@ -40,13 +43,14 @@ class TemporaryMergedYaml:
         cwd = os.getcwd()
         try:
             ProjectRoot.traverse()
+            delete = not os.path.exists(cfg_path)
             tempfile = open(cfg_path, 'w')
             tempfile.write(yaml.safe_dump(cfg))
             tempfile.flush()
         finally:
             os.chdir(cwd)
 
-            return tempfile
+            return tempfile, delete
 
     @staticmethod
     def __merge(dicts):

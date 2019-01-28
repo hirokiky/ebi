@@ -24,8 +24,7 @@ def main(parsed):
     if parsed.region:
         payload.append('--region=' + parsed.region)
 
-    base_cfg_name = get_filename_without_extension(parsed.cfg_files[0])
-    if name == base_cfg_name or len(parsed.cfg_files) == 1:
+    if len(parsed.cfg_files) == 1 and not parsed.name:
         sys.exit(subprocess.call(payload))
     else:
         with TemporaryMergedYaml(parsed.cfg_files, name):
