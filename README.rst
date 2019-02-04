@@ -38,6 +38,7 @@ This will
 options:
 
 * ``--version``: version label for app. default is timestamp.
+* ``--description``: description for this version.
 * ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
@@ -59,6 +60,7 @@ This will
 options:
 
 * ``--version``: version label for app. default is timestamp.
+* ``--description``: description for this version.
 * ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
@@ -94,6 +96,7 @@ options:
 
 * ``--noswap``: Skip swapping to just deploy secondary environment.
 * ``--version``: version label for app. default is timestamp.
+* ``--description``: description for this version.
 * ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
@@ -127,6 +130,7 @@ This will
 
 * ``--noswap``: Skip swapping to just deploy secondary environment.
 * ``--version``: version label for app. default is timestamp.
+* ``--description``: description for this version.
 * ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.

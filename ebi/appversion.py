@@ -56,7 +56,7 @@ def upload_app_version(app_name, bundled_zip):
     return bucket, key
 
 
-def make_application_version(app_name, version, dockerrun, ebext):
+def make_application_version(app_name, version, dockerrun, ebext, description):
     bundled_zip = make_version_file(version, dockerrun=dockerrun, ebext=ebext)
     try:
         bucket, key = upload_app_version(app_name, bundled_zip)
@@ -66,6 +66,7 @@ def make_application_version(app_name, version, dockerrun, ebext):
         eb.create_application_version(
             ApplicationName=app_name,
             VersionLabel=version,
+            Description=description,
             SourceBundle={
                 'S3Bucket': bucket,
                 'S3Key': key,
