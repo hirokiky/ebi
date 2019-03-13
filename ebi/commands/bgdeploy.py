@@ -112,7 +112,7 @@ def main(parsed):
 
         # Wait for the instance to come up.
         while not get_instance_health(secondary_group_name, number):
-            logger.info("Waiting.....")
+            logger.info("Wait for the instance to come up")
             time.sleep(5)
 
     ###
