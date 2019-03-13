@@ -98,6 +98,7 @@ options:
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
 * ``--region``: region for AWS.
+* ``--capacity``: Increase the number of standby instances to primary instances.
 
 clonedeploy
 ~~~~~~~~~~~
