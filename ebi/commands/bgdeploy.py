@@ -9,6 +9,7 @@ from .. import appversion
 
 logger = logging.getLogger(__name__)
 
+
 def get_environ_name_for_cname(app_name, cname):
     """ Determine environment name having :param cname: on :param app_name:.
 
@@ -70,7 +71,13 @@ def update_secondary_group_capacity(primary_group_name, secondary_group_name):
 
     # Wait for the instance to come up.
     logger.info('Wait for the instance to come up')
+    start = time.time()
     while not get_instance_health(secondary_group_name, number):
+        passed_time = time.time() - start
+        # Make timeout 20 minutes
+        if passed_time >= 20 * 60:
+            logger.warning("The capacity set operation timed out.")
+            sys.exit(1)
         time.sleep(30)
 
     logger.info("The all of instances are healthy.")
