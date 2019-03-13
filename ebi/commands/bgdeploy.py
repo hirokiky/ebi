@@ -47,7 +47,7 @@ def get_instance_health(group_name, number):
         return False
 
     for instance in instances:
-        # Wait for the all of instance status is ok.
+        # Wait for the all of instance status to be healthy.
         ec2 = boto3.client('ec2')
         instance = ec2.describe_instance_status(InstanceIds=[instance['InstanceId']])
         if instance['InstanceStatuses'][0]['InstanceStatus']['Status'] != 'ok':
