@@ -28,18 +28,59 @@ def get_environ_name_for_cname(app_name, cname):
     raise ValueError('Could not find environment for applied app_name and cname')
 
 
-def get_primary_env_capacity(group_name):
+def get_instance_health(group_name, number):
     autoscale = boto3.client('autoscaling')
     as_json = autoscale.describe_auto_scaling_groups(
         AutoScalingGroupNames=[group_name])
+    instances = as_json['AutoScalingGroups'][0]['Instances']
+    instance_number = len(instances)
+    if instance_number != number:
+        return False
+
+    for instance in instances:
+        # Wait for the all of instance status to be healthy.
+        ec2 = boto3.client('ec2')
+        instance = ec2.describe_instance_status(InstanceIds=[instance['InstanceId']])
+        if not instance['InstanceStatuses']:
+            return False
+        elif instance['InstanceStatuses'][0]['InstanceStatus']['Status'] != 'ok':
+            return False
+    return True
+
+
+def update_secondary_group_capacity(primary_group_name, secondary_group_name):
+    autoscale = boto3.client('autoscaling')
+    as_json = autoscale.describe_auto_scaling_groups(
+        AutoScalingGroupNames=[primary_group_name])
     number = as_json['AutoScalingGroups'][0]['DesiredCapacity']
-    min_number = as_json['AutoScalingGroups'][0]['MinSize']
-    # Skip when the primary instance capacity is smaller than double of the min size.
-    if number <= min_number * 2:
-        return
-    # Return half of value when the number of running instances is twice as larger than the min number.
-    if number > min_number * 2:
-        return int(number / 2)
+    min_size = as_json['AutoScalingGroups'][0]['MinSize']
+    max_size = as_json['AutoScalingGroups'][0]['MaxSize']
+
+    autoscale.update_auto_scaling_group(
+        AutoScalingGroupName=secondary_group_name,
+        MaxSize=max_size,
+        MinSize=min_size,
+        DesiredCapacity=number
+    )
+    logger.info(
+        'The number of instances to run was set to %d, the minimum size to %d, the maximum size to %d',
+        number,
+        min_size,
+        max_size
+    )
+
+    # Wait for the instance to come up.
+    logger.info('Wait for the instance to come up')
+    start = time.time()
+    while not get_instance_health(secondary_group_name, number):
+        passed_time = time.time() - start
+        # Make timeout 20 minutes
+        if passed_time >= 20 * 60:
+            logger.warning("The capacity set operation timed out.")
+            sys.exit(1)
+        time.sleep(30)
+
+    logger.info("The all of instances are healthy.")
 
 
 def main(parsed):
@@ -98,12 +139,7 @@ def main(parsed):
                 secondary_group_name = x['ResourceId']
             elif x['Key'] == 'Name' and x['Value'] == primary_env_name:
                 primary_group_name = x['ResourceId']
-        number = get_primary_env_capacity(primary_group_name)
-        if not number:
-            logger.info('The primary instance capacity is smaller than double of the min size.')
-        else:
-            autoscale.update_auto_scaling_group(AutoScalingGroupName=secondary_group_name, DesiredCapacity=number)
-            logger.info('The number of instance in %s was set to %d.', secondary_env_name, number)
+        update_secondary_group_capacity(primary_group_name, secondary_group_name)
 
     ###
     # Swapping
@@ -139,4 +175,3 @@ def apply_args(parser):
     parser.add_argument('--ebext', help='Path to directory used as .ebextensions/')
     parser.add_argument('--capacity', help='Set the number of instances.')
     parser.set_defaults(func=main)
-
