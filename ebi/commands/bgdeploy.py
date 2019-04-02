@@ -48,7 +48,7 @@ def get_instance_health(group_name, number):
     return True
 
 
-def update_secondary_group_capacity(primary_group_name, secondary_group_name):
+def update_secondary_group_capacity(primary_group_name, secondary_group_name, secondary_env_name, app_name):
     autoscale = boto3.client('autoscaling')
     as_json = autoscale.describe_auto_scaling_groups(
         AutoScalingGroupNames=[primary_group_name])
@@ -81,6 +81,17 @@ def update_secondary_group_capacity(primary_group_name, secondary_group_name):
         time.sleep(30)
 
     logger.info("The all of instances are healthy.")
+
+    # update EB environment description
+    eb = boto3.client('elasticbeanstalk')
+    eb.update_environment(
+        ApplicationName=app_name,
+        EnvironmentName=secondary_env_name,
+        OptionSettings=[
+            {'Namespace': 'aws:autoscaling:asg', 'OptionName': 'MinSize', 'Value': str(min_size)},
+            {'Namespace': 'aws:autoscaling:asg', 'OptionName': 'MaxSize', 'Value': str(max_size)}
+        ]
+    )
 
 
 def main(parsed):
@@ -139,7 +150,12 @@ def main(parsed):
                 secondary_group_name = x['ResourceId']
             elif x['Key'] == 'Name' and x['Value'] == primary_env_name:
                 primary_group_name = x['ResourceId']
-        update_secondary_group_capacity(primary_group_name, secondary_group_name)
+        update_secondary_group_capacity(
+            primary_group_name,
+            secondary_group_name,
+            secondary_env_name,
+            parsed.app_name
+        )
 
     ###
     # Swapping
