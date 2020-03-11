@@ -53,7 +53,6 @@ def main(parsed):
     # Cloning
     ###
     payload = ['eb', 'clone', master_env_name,
-               '--exact',
                '--timeout=45',  # Basically, it takes a while.
                '--clone_name=' + next_env_name,
                '--cname=' + next_env_cname]
@@ -61,6 +60,8 @@ def main(parsed):
         payload.append('--profile=' + parsed.profile)
     if parsed.region:
         payload.append('--region=' + parsed.region)
+    if parsed.exact:
+        payload.append('--exact')
 
     r = subprocess.call(payload)
     if r != 0:
@@ -127,4 +128,7 @@ def apply_args(parser):
     parser.add_argument('--region', help='AWS region')
     parser.add_argument('--dockerrun', help='Path to file used as Dockerrun.aws.json')
     parser.add_argument('--ebext', help='Path to directory used as .ebextensions/')
+    parser.add_argument('--exact', help='Prevents Elastic Beanstalk from updating'
+                                        'the solution stack version',
+                        action='store_true', default=False)
     parser.set_defaults(func=main)
