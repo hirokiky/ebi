@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 def main(parsed):
     if parsed.version:
         version = parsed.version
+    elif parsed.prefix :
+        version = "{}_{}".format(parsed.prefix, int(time.time()))
     else:
         version = str(int(time.time()))
 
@@ -36,6 +38,7 @@ def apply_args(parser):
     parser.add_argument('app_name', help='Application name to deploy')
     parser.add_argument('env_name', help='Environ name to deploy')
     parser.add_argument('--version', help='Version label you want to specify')
+    parser.add_argument('--prefix', help='Version label prefix you want to specify')
     parser.add_argument('--description', help='Description for this version')
     parser.add_argument('--profile', help='AWS account')
     parser.add_argument('--region', help='AWS region')
