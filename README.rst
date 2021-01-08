@@ -42,7 +42,7 @@ options:
 * ``--prefix``: version prefix for app. It is added to timestamp.
 * ``--description``: description for this version.
 * ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
-* ``--docker_compose``: File path used as ``docker-compose.yml``.
+* ``--docker-compose``: File path used as ``docker-compose.yml``.
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
 * ``--region``: region for AWS.
@@ -66,7 +66,7 @@ options:
 * ``--prefix``: version prefix for app. It is added to timestamp.
 * ``--description``: description for this version.
 * ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
-* ``--docker_compose``: File path used as ``docker-compose.yml``.
+* ``--docker-compose``: File path used as ``docker-compose.yml``.
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
 * ``--region``: region for AWS.
@@ -104,7 +104,7 @@ options:
 * ``--prefix``: version prefix for app. It is added to timestamp.
 * ``--description``: description for this version.
 * ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
-* ``--docker_compose``: File path used as ``docker-compose.yml``.
+* ``--docker-compose``: File path used as ``docker-compose.yml``.
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
 * ``--region``: region for AWS.
@@ -141,7 +141,7 @@ This will
 * ``--prefix``: version prefix for app. It is added to timestamp.
 * ``--description``: description for this version.
 * ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
-* ``--docker_compose``: File path used as ``docker-compose.yml``.
+* ``--docker-compose``: File path used as ``docker-compose.yml``.
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
 * ``--region``: region for AWS.

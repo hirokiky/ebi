@@ -47,7 +47,7 @@ def apply_args(parser):
     parser.add_argument('--profile', help='AWS account')
     parser.add_argument('--region', help='AWS region')
     parser.add_argument('--dockerrun', help='Path to file used as Dockerrun.aws.json')
-    parser.add_argument('--docker_compose', help='Path to file used as docker-compose.yml')
+    parser.add_argument('--docker-compose', help='Path to file used as docker-compose.yml')
     parser.add_argument('--ebext', help='Path to directory used as .ebextensions/')
     parser.add_argument('--cfg', help='Configuration template name to eb create')
     parser.set_defaults(func=main)
