@@ -84,7 +84,7 @@ def main(parsed):
     else:
         description = ''
 
-    appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.docker_compose, parsed.ebext, parsed.ebignore, description)
+    appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.docker_compose, parsed.ebext, parsed.use_ebignore, description)
     logger.info('Ok, now deploying the version %s for %s', version, next_env_name)
     payload = ['eb', 'deploy', next_env_name,
                '--version=' + version]
@@ -132,7 +132,7 @@ def apply_args(parser):
     parser.add_argument('--dockerrun', help='Path to file used as Dockerrun.aws.json')
     parser.add_argument('--docker-compose', help='Path to file used as docker-compose.yml')
     parser.add_argument('--ebext', help='Path to directory used as .ebextensions/')
-    parser.add_argument('--ebignore', help='Zip project based on .ebignore',
+    parser.add_argument('--use-ebignore', help='Zip project based on .ebignore',
                         action='store_true', default=False)
     parser.add_argument('--exact', help='Prevents Elastic Beanstalk from updating'
                                         'the solution stack version',
