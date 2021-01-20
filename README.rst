@@ -7,6 +7,7 @@ Elastic Beanstalk Intelligence, Simple CLI tool for ElasticBeanstalk with Docker
 
   * Without git integration
   * Switch-able ``Dockerrun.aws.json``
+  * Switch-able ``docker-compose.yml``
   * Switch-able ``.ebextensions/``
 
 Install
@@ -31,15 +32,17 @@ To deploy app, just type it on project root::
 
 This will
 
-1. Create zip file including ``Dockerrun.aws.json`` and ``.ebextensions``
+1. Create zip file including ``Dockerrun.aws.json`` and ``.ebextensions`` or ``docker-compose.yml`` and ``.ebextensions``
 2. Uploading zip to S3 as same directory as ``awsebcli``.
 3. Deploying app (by calling ``eb deploy`` with uploaded --version)
 
 options:
 
 * ``--version``: version label for app. default is timestamp.
+* ``--prefix``: version prefix for app. It is added to timestamp.
 * ``--description``: description for this version.
 * ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
+* ``--docker-compose``: File path used as ``docker-compose.yml``.
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
 * ``--region``: region for AWS.
@@ -53,15 +56,17 @@ To create app, just type it on project root::
 
 This will
 
-1. Create zip file including ``Dockerrun.aws.json`` and ``.ebextensions``
+1. Create zip file including ``Dockerrun.aws.json`` and ``.ebextensions`` or ``docker-compose.yml`` and ``.ebextensions``
 2. Uploading zip to S3 as same directory as ``awsebcli``.
 3. Creating app (by calling ``eb create`` with uploaded --version)
 
 options:
 
 * ``--version``: version label for app. default is timestamp.
+* ``--prefix``: version prefix for app. It is added to timestamp.
 * ``--description``: description for this version.
 * ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
+* ``--docker-compose``: File path used as ``docker-compose.yml``.
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
 * ``--region``: region for AWS.
@@ -76,7 +81,7 @@ To Blue-Green deploye app, just type it on project root::
 
 This will
 
-1. Create zip file including ``Dockerrun.aws.json`` and ``.ebextensions``
+1. Create zip file including ``Dockerrun.aws.json`` and ``.ebextensions`` or ``docker-compose.yml`` and ``.ebextensions``
 2. Uploading zip to S3 as same directory as ``awsebcli``.
 3. Deploy new version to secondary environment which doen't have ``primary_env_cname``
    (by calling ``eb deploy`` with uploaded --version)
@@ -96,8 +101,10 @@ options:
 
 * ``--noswap``: Skip swapping to just deploy secondary environment.
 * ``--version``: version label for app. default is timestamp.
+* ``--prefix``: version prefix for app. It is added to timestamp.
 * ``--description``: description for this version.
 * ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
+* ``--docker-compose``: File path used as ``docker-compose.yml``.
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
 * ``--region``: region for AWS.
@@ -113,7 +120,7 @@ To deploy app with cloning, just type it on project root::
 This will
 
 1. Create clone of master environment for next version environment.
-2. Create zip file including ``Dockerrun.aws.json`` and ``.ebextensions``
+2. Create zip file including ``Dockerrun.aws.json`` and ``.ebextensions`` or ``docker-compose.yml`` and ``.ebextensions``
 3. Uploading zip to S3 as same directory as ``awsebcli``.
 4. Deploy new version to next version (by calling ``eb deploy`` with uploaded --version)
 5. Apply master cname for deployed (next version) environment
@@ -131,9 +138,10 @@ This will
 
 * ``--noswap``: Skip swapping to just deploy secondary environment.
 * ``--version``: version label for app. default is timestamp.
+* ``--prefix``: version prefix for app. It is added to timestamp.
 * ``--description``: description for this version.
 * ``--dockerrun``: File path used as ``Dockerrun.aws.json``.
+* ``--docker-compose``: File path used as ``docker-compose.yml``.
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
 * ``--region``: region for AWS.
-

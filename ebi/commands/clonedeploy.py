@@ -74,6 +74,8 @@ def main(parsed):
     ###
     if parsed.version:
         version = parsed.version
+    elif parsed.prefix :
+        version = "{}_{}".format(parsed.prefix, int(time.time()))
     else:
         version = str(int(time.time()))
 
@@ -82,7 +84,7 @@ def main(parsed):
     else:
         description = ''
 
-    appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.ebext, description)
+    appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.docker_compose, parsed.ebext, description)
     logger.info('Ok, now deploying the version %s for %s', version, next_env_name)
     payload = ['eb', 'deploy', next_env_name,
                '--version=' + version]
@@ -123,10 +125,12 @@ def apply_args(parser):
                                          'environment',
                         action='store_true', default=False)
     parser.add_argument('--version', help='Version label you want to specify')
+    parser.add_argument('--prefix', help='Version label prefix you want to specify')
     parser.add_argument('--description', help='Description for this version')
     parser.add_argument('--profile', help='AWS account')
     parser.add_argument('--region', help='AWS region')
     parser.add_argument('--dockerrun', help='Path to file used as Dockerrun.aws.json')
+    parser.add_argument('--docker-compose', help='Path to file used as docker-compose.yml')
     parser.add_argument('--ebext', help='Path to directory used as .ebextensions/')
     parser.add_argument('--exact', help='Prevents Elastic Beanstalk from updating'
                                         'the solution stack version',
