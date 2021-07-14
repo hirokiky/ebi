@@ -24,7 +24,7 @@ def make_version_file_with_ebignore(version_label, dockerrun=None, docker_compos
     :param version_label: will be name of the created zip file
 
     * Including :param dockerrun: file as Dockerrun.aws.json
-    * Including :param docker-compose: file as dockerrun-compose.yml (for Amazon linux2)
+    * Including :param docker-compose: file as docker-compose.yml (for Amazon linux2)
     * Including :param exext: directory as .ebextensions/
 
     :return: File path to created zip file (current directory).
@@ -75,7 +75,7 @@ def make_version_file(version_label, dockerrun=None, docker_compose=None, ebext=
     :param version_label: will be name of the created zip file
 
     * Including :param dockerrun: file as Dockerrun.aws.json
-    * Including :param docker-compose: file as dockerrun-compose.yml (for Amazon linux2)
+    * Including :param docker-compose: file as docker-compose.yml (for Amazon linux2)
     * Including :param ebext: directory as .ebextensions/
 
     :return: File path to created zip file (current directory).
