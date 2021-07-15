@@ -121,7 +121,11 @@ def upload_app_version(app_name, bundled_zip):
 
 def make_application_version(app_name, version, dockerrun, docker_compose, ebext, use_ebignore, description):
     if use_ebignore:
-        bundled_zip = make_version_file_with_ebignore(version, dockerrun=dockerrun, docker_compose=docker_compose, ebext=ebext)
+        if os.path.isfile(".ebignore"):
+            bundled_zip = make_version_file_with_ebignore(version, dockerrun=dockerrun, docker_compose=docker_compose, ebext=ebext)
+        else:
+            logger.info('.ebignore does not exist. Make a version file not using ebignore')
+            bundled_zip = make_version_file(version, dockerrun=dockerrun, docker_compose=docker_compose, ebext=ebext)
     else:
         bundled_zip = make_version_file(version, dockerrun=dockerrun, docker_compose=docker_compose, ebext=ebext)
     try:
