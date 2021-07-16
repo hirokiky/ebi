@@ -49,7 +49,7 @@ def apply_args(parser):
     parser.add_argument('--docker-compose', help='Path to file used as docker-compose.yml')
     parser.add_argument('--ebext', help='Path to directory used as .ebextensions/')
     parser.add_argument('--use-ebignore', help='Zip project based on .ebignore',
-                        action='store_true', default=False)
+                        action='store_true', default=True)
     parser.add_argument('--staged', action='store_true', default=False,
                         help='deploy files staged in git rather than the HEAD commit')
     parser.set_defaults(func=main)
