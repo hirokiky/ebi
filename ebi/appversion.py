@@ -51,6 +51,7 @@ def make_version_file_with_ebignore(version_label, dockerrun=None, docker_compos
         fileoperations.zip_up_project(temp_zip_path, ignore_list=ignore_files)
         shutil.copyfile(temp_zip_path, zip_filename)
 
+        logger.info(f'Adding {DOCKERRUN_NAME}, {DOCKER_COMPOSE_NAME}, {DOCKEREXT_NAME} to archive.')
         with zipfile.ZipFile(zip_filename, 'a', allowZip64=True) as f:
             for file in os.listdir(ebext):
                 source_ebext_file_path = os.path.join(ebext, file)
