@@ -29,8 +29,6 @@ def make_version_file_with_ebignore(version_label, dockerrun=None, docker_compos
 
     :return: File path to created zip file (current directory).
     """
-    dockerrun = dockerrun or DOCKERRUN_NAME
-
     ebext = ebext or DOCKEREXT_NAME
 
     tempd = tempfile.mkdtemp()
@@ -61,7 +59,10 @@ def make_version_file_with_ebignore(version_label, dockerrun=None, docker_compos
 
             if docker_compose:
                 f.write(docker_compose, arcname=DOCKER_COMPOSE_NAME)
+                if dockerrun:
+                    f.write(dockerrun, arcname=DOCKERRUN_NAME)
             else:
+                dockerrun = dockerrun or DOCKERRUN_NAME
                 f.write(dockerrun, arcname=DOCKERRUN_NAME)
 
         return zip_filename
