@@ -4,7 +4,7 @@ long_description = open('./README.rst').read()
 
 setup(
     name='ebi',
-    version='0.11.1',
+    version='0.12.0',
     install_requires=[
         'awsebcli>=3.7.3,<4',
         'boto3>=1.2.6,<2',
