@@ -115,7 +115,7 @@ clonedeploy
 
 To deploy app with cloning, just type it on project root::
 
-    $ ebi clonedeploy <app_name> <env_name> <green_env_name> <cname_prefix>
+    $ ebi clonedeploy <app_name> <env_name> <cname_prefix>
 
 This will
 
