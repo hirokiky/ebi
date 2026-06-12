@@ -14,19 +14,17 @@ def get_environ_name_for_cname(app_name, cname):
     """ Determine environment name having :param cname: on :param app_name:.
 
     If cname duplicated, longer one will be returned.
-    For example, there are myenv.ap-northeast-1.elasticbeanstalk.com and myenv.elasticbeanstal.com,
-    myenv.ap-northeast-1.elasticbeanstal.com will be returned.
+    For example, there are myenv.ap-northeast-1.elasticbeanstalk.com and myenv.elasticbeanstalk.com,
+    myenv.ap-northeast-1.elasticbeanstalk.com will be returned.
     """
     eb = boto3.client('elasticbeanstalk')
     res = eb.describe_environments(ApplicationName=app_name)
 
-    if res['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise ValueError('ElasticBeanstalk client did not return 200 for describing environments')
-
     for e in reversed(sorted(res['Environments'], key=lambda x: len(x['CNAME']))):
         if e['CNAME'].startswith(cname + '.'):
             return e['EnvironmentName']
-    raise ValueError('Could not find environment for applied app_name and cname')
+    logger.error('Could not find environment for applied app_name and cname')
+    sys.exit(1)
 
 
 def base36encode(num):
