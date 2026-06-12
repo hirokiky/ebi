@@ -13,6 +13,29 @@ from .commands.create import apply_args as apply_args_create
 from .commands.deploy import apply_args as apply_args_deploy
 
 
+def setup_session(profile=None, region=None):
+    """ Configure the default boto3 session and propagate it to ebcli.
+
+    Note this depends on private boto3/botocore APIs
+    (``boto3._get_default_session()`` and
+    ``session._session.get_config_variable(...)``); the assumptions are
+    pinned down by the tests in tests/test_private_api_assumptions.py.
+    """
+    conf = {}
+    if profile:
+        conf['profile_name'] = profile
+    if region:
+        conf['region_name'] = region
+    boto3.setup_default_session(**conf)
+    session = boto3._get_default_session()
+    ebaws.set_region(session._session.get_config_variable('region'))
+    # Session.profile_name falls back to 'default', which would make
+    # botocore ignore credentials from environment variables.
+    profile = session._session.get_config_variable('profile')
+    if profile:
+        ebaws.set_profile(profile)
+
+
 def main():
     """ Main function called from console_scripts
     """
@@ -39,17 +62,5 @@ def main():
         parser.print_help()
         return
 
-    conf = {}
-    if parsed.profile:
-        conf['profile_name'] = parsed.profile
-    if parsed.region:
-        conf['region_name'] = parsed.region
-    boto3.setup_default_session(**conf)
-    session = boto3._get_default_session()
-    ebaws.set_region(session._session.get_config_variable('region'))
-    # Session.profile_name falls back to 'default', which would make
-    # botocore ignore credentials from environment variables.
-    profile = session._session.get_config_variable('profile')
-    if profile:
-        ebaws.set_profile(profile)
+    setup_session(parsed.profile, parsed.region)
     parsed.func(parsed)
