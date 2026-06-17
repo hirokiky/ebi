@@ -44,7 +44,7 @@ def make_version_file_with_ebignore(version_label, dockerrun=None, docker_compos
                 ignore_ebext_files.add(ebext_file_path)
         ignore_files |= ignore_ebext_files
 
-        zip_filename = version_label + ".zip"
+        zip_filename = f"{version_label}.zip"
         temp_zip_path = os.path.join(tempd, zip_filename)
         fileoperations.zip_up_project(temp_zip_path, ignore_list=ignore_files)
         shutil.copyfile(temp_zip_path, zip_filename)
@@ -111,13 +111,13 @@ def upload_app_version(app_name, bundled_zip):
     :return: bucket name and key for file (as tuple).
     """
     bucket = elasticbeanstalk.get_storage_location()
-    key = app_name + '/' + os.path.basename(bundled_zip)
+    key = f'{app_name}/{os.path.basename(bundled_zip)}'
     try:
         ebs3.get_object_info(bucket, key)
         logger.warning('S3 object already exists at %s. Skipping upload and reusing the existing object; '
                        'it may not match your local bundle.', key)
     except NotFoundError:
-        logger.info('Uploading archive to s3 location: ' + key)
+        logger.info(f'Uploading archive to s3 location: {key}')
         ebs3.upload_application_version(bucket, key, bundled_zip)
     return bucket, key
 

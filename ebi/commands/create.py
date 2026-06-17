@@ -12,7 +12,7 @@ def main(parsed):
     if parsed.version:
         version = parsed.version
     elif parsed.prefix:
-        version = "{}_{}".format(parsed.prefix, int(time.time()))
+        version = f"{parsed.prefix}_{int(time.time())}"
     else:
         version = str(int(time.time()))
 
@@ -26,16 +26,16 @@ def main(parsed):
     logger.info('Ok, now creating version %s for environment %s', version, parsed.env_name)
     payload = ['eb', 'create', parsed.env_name,
                '--timeout=45',
-               '--version=' + version,
-               '--cname=' + parsed.cname]
+               f'--version={version}',
+               f'--cname={parsed.cname}']
     if parsed.profile:
-        payload.append('--profile=' + parsed.profile)
+        payload.append(f'--profile={parsed.profile}')
     if parsed.cfg:
-        payload.append('--cfg=' + parsed.cfg)
+        payload.append(f'--cfg={parsed.cfg}')
     if parsed.region:
-        payload.append('--region=' + parsed.region)
+        payload.append(f'--region={parsed.region}')
     if parsed.timeout:
-        payload.append('--timeout=' + parsed.timeout)
+        payload.append(f'--timeout={parsed.timeout}')
     sys.exit(subprocess.call(payload))
 
 

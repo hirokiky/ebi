@@ -18,7 +18,7 @@ Install
     pip install ebi
 
 
-Requires Python2.7 or 3.5
+Requires Python 3.10 or later
 
 Usage
 -----

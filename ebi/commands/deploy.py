@@ -12,7 +12,7 @@ def main(parsed):
     if parsed.version:
         version = parsed.version
     elif parsed.prefix:
-        version = "{}_{}".format(parsed.prefix, int(time.time()))
+        version = f"{parsed.prefix}_{int(time.time())}"
     else:
         version = str(int(time.time()))
 
@@ -24,13 +24,13 @@ def main(parsed):
     appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.docker_compose, parsed.ebext, parsed.use_ebignore, description)
     logger.info('Ok, now deploying the version %s for %s', version, parsed.env_name)
     payload = ['eb', 'deploy', parsed.env_name,
-               '--version=' + version]
+               f'--version={version}']
     if parsed.profile:
-        payload.append('--profile=' + parsed.profile)
+        payload.append(f'--profile={parsed.profile}')
     if parsed.region:
-        payload.append('--region=' + parsed.region)
+        payload.append(f'--region={parsed.region}')
     if parsed.timeout:
-        payload.append('--timeout=' + parsed.timeout)
+        payload.append(f'--timeout={parsed.timeout}')
     if parsed.staged:
         payload.append('--staged')
     sys.exit(subprocess.call(payload))
