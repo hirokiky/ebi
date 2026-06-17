@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ebi"
+version = "0.12.0"
+description = "Simple CLI tool for ElasticBeanstalk with Docker"
+readme = "README.rst"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "Hiroki KIYOHARA", email = "hirokiky@gmail.com" },
+]
+requires-python = ">=3.10"
+dependencies = [
+    "awsebcli>=3.7.3,<4",
+    "boto3>=1.2.6,<2",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+[project.urls]
+Homepage = "https://github.com/hirokiky/ebi"
+
+[project.scripts]
+ebi = "ebi.core:main"
+
+[tool.setuptools.packages.find]
+include = ["ebi*"]

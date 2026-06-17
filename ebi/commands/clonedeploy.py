@@ -21,7 +21,7 @@ def get_environ_name_for_cname(app_name, cname):
     res = eb.describe_environments(ApplicationName=app_name)
 
     for e in reversed(sorted(res['Environments'], key=lambda x: len(x['CNAME']))):
-        if e['CNAME'].startswith(cname + '.'):
+        if e['CNAME'].startswith(f'{cname}.'):
             return e['EnvironmentName']
     logger.error('Could not find environment for applied app_name and cname')
     sys.exit(1)
@@ -39,8 +39,8 @@ def base36encode(num):
 
 
 def make_next_env_names(base_env_name, base_cname):
-    suffix = '-' + str(base36encode(int(time.time())))
-    return base_env_name + suffix, base_cname + suffix
+    suffix = f'-{base36encode(int(time.time()))}'
+    return f'{base_env_name}{suffix}', f'{base_cname}{suffix}'
 
 
 def main(parsed):
@@ -52,14 +52,14 @@ def main(parsed):
     ###
     payload = ['eb', 'clone', master_env_name,
                '--timeout=45',  # Basically, it takes a while.
-               '--clone_name=' + next_env_name,
-               '--cname=' + next_env_cname]
+               f'--clone_name={next_env_name}',
+               f'--cname={next_env_cname}']
     if parsed.profile:
-        payload.append('--profile=' + parsed.profile)
+        payload.append(f'--profile={parsed.profile}')
     if parsed.region:
-        payload.append('--region=' + parsed.region)
+        payload.append(f'--region={parsed.region}')
     if parsed.timeout:
-        payload.append('--timeout=' + parsed.timeout)
+        payload.append(f'--timeout={parsed.timeout}')
     if parsed.exact:
         payload.append('--exact')
 
@@ -75,7 +75,7 @@ def main(parsed):
     if parsed.version:
         version = parsed.version
     elif parsed.prefix:
-        version = "{}_{}".format(parsed.prefix, int(time.time()))
+        version = f"{parsed.prefix}_{int(time.time())}"
     else:
         version = str(int(time.time()))
 
@@ -87,13 +87,13 @@ def main(parsed):
     appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.docker_compose, parsed.ebext, parsed.use_ebignore, description)
     logger.info('Ok, now deploying the version %s for %s', version, next_env_name)
     payload = ['eb', 'deploy', next_env_name,
-               '--version=' + version]
+               f'--version={version}']
     if parsed.profile:
-        payload.append('--profile=' + parsed.profile)
+        payload.append(f'--profile={parsed.profile}')
     if parsed.region:
-        payload.append('--region=' + parsed.region)
+        payload.append(f'--region={parsed.region}')
     if parsed.timeout:
-        payload.append('--timeout=' + parsed.timeout)
+        payload.append(f'--timeout={parsed.timeout}')
     r = subprocess.call(payload)
     if r != 0:
         logger.error("Failed to deploy version %s to environment %s",
