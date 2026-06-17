@@ -14,18 +14,17 @@ def get_environ_name_for_cname(app_name, cname):
     """ Determine environment name having :param cname: on :param app_name:.
 
     If cname duplicated, longer one will be returned.
-    For example, there are myenv.ap-northeast-1.elasticbeanstalk.com and myenv.elasticbeanstal.com,
-    myenv.ap-northeast-1.elasticbeanstal.com will be returned.
+    For example, there are myenv.ap-northeast-1.elasticbeanstalk.com and myenv.elasticbeanstalk.com,
+    myenv.ap-northeast-1.elasticbeanstalk.com will be returned.
     """
     eb = boto3.client('elasticbeanstalk')
     res = eb.describe_environments(ApplicationName=app_name)
-    if res['ResponseMetadata']['HTTPStatusCode'] != 200:
-        raise ValueError('ElasticBeanstalk client did not return 200 for describing environments')
 
     for e in reversed(sorted(res['Environments'], key=lambda x: len(x['CNAME']))):
         if e['CNAME'].startswith(cname + '.'):
             return e['EnvironmentName']
-    raise ValueError('Could not find environment for applied app_name and cname')
+    logger.error('Could not find environment for applied app_name and cname')
+    sys.exit(1)
 
 
 def get_instance_health(group_name, number):
@@ -37,13 +36,20 @@ def get_instance_health(group_name, number):
     if instance_number != number:
         return False
 
-    for instance in instances:
-        # Wait for the all of instance status to be healthy.
-        ec2 = boto3.client('ec2')
-        instance = ec2.describe_instance_status(InstanceIds=[instance['InstanceId']])
-        if not instance['InstanceStatuses']:
-            return False
-        elif instance['InstanceStatuses'][0]['InstanceStatus']['Status'] != 'ok':
+    if not instances:
+        return True
+
+    # Wait for the all of instance status to be healthy.
+    ec2 = boto3.client('ec2')
+    res = ec2.describe_instance_status(
+        InstanceIds=[instance['InstanceId'] for instance in instances])
+    statuses = res['InstanceStatuses']
+    # describe_instance_status returns only running instances by default,
+    # so fewer statuses than instances means some are not running yet.
+    if len(statuses) != instance_number:
+        return False
+    for status in statuses:
+        if status['InstanceStatus']['Status'] != 'ok':
             return False
     return True
 
@@ -103,7 +109,8 @@ def main(parsed):
         primary_env_name = parsed.green_env
         secondary_env_name = parsed.blue_env
     else:
-        raise ValueError('master env for cname {p.cname} was not in {p.app_name}'.format(p=parsed))
+        logger.error('master env for cname %s was not in %s', parsed.cname, parsed.app_name)
+        sys.exit(1)
 
     ###
     # Deploying

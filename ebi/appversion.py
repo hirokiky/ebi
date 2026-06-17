@@ -19,13 +19,13 @@ DOCKEREXT_NAME = '.ebextensions/'
 
 
 def make_version_file_with_ebignore(version_label, dockerrun=None, docker_compose=None, ebext=None):
-    """ Making zip file to upload for ElasticBeanstalk based on ebigore
+    """ Making zip file to upload for ElasticBeanstalk based on ebignore
 
     :param version_label: will be name of the created zip file
 
     * Including :param dockerrun: file as Dockerrun.aws.json
-    * Including :param docker-compose: file as docker-compose.yml (for Amazon linux2)
-    * Including :param exext: directory as .ebextensions/
+    * Including :param docker_compose: file as docker-compose.yml (for Amazon linux2)
+    * Including :param ebext: directory as .ebextensions/
 
     :return: File path to created zip file (current directory).
     """
@@ -35,7 +35,7 @@ def make_version_file_with_ebignore(version_label, dockerrun=None, docker_compos
     try:
         ignore_files = fileoperations.get_ebignore_list()
 
-        # Dockerrun, docker-compose and ebextentions files are added to zip file later.
+        # Dockerrun, docker-compose and ebextensions files are added to zip file later.
         ignore_files |= {DOCKERRUN_NAME, DOCKER_COMPOSE_NAME}
         ignore_ebext_files = set()
         for file in os.listdir(DOCKEREXT_NAME):
@@ -50,7 +50,7 @@ def make_version_file_with_ebignore(version_label, dockerrun=None, docker_compos
         shutil.copyfile(temp_zip_path, zip_filename)
 
         logger.info(f'Adding {DOCKERRUN_NAME}, {DOCKER_COMPOSE_NAME}, {DOCKEREXT_NAME} to archive.')
-        with zipfile.ZipFile(zip_filename, 'a', allowZip64=True) as f:
+        with zipfile.ZipFile(zip_filename, 'a', compression=zipfile.ZIP_DEFLATED, allowZip64=True) as f:
             for file in os.listdir(ebext):
                 source_ebext_file_path = os.path.join(ebext, file)
                 target_ebext_file_path = os.path.join(DOCKEREXT_NAME, file)
@@ -77,7 +77,7 @@ def make_version_file(version_label, dockerrun=None, docker_compose=None, ebext=
     :param version_label: will be name of the created zip file
 
     * Including :param dockerrun: file as Dockerrun.aws.json
-    * Including :param docker-compose: file as docker-compose.yml (for Amazon linux2)
+    * Including :param docker_compose: file as docker-compose.yml (for Amazon linux2)
     * Including :param ebext: directory as .ebextensions/
 
     :return: File path to created zip file (current directory).
@@ -114,7 +114,8 @@ def upload_app_version(app_name, bundled_zip):
     key = app_name + '/' + os.path.basename(bundled_zip)
     try:
         ebs3.get_object_info(bucket, key)
-        logger.info('S3 Object already exists. Skipping upload.')
+        logger.warning('S3 object already exists at %s. Skipping upload and reusing the existing object; '
+                       'it may not match your local bundle.', key)
     except NotFoundError:
         logger.info('Uploading archive to s3 location: ' + key)
         ebs3.upload_application_version(bucket, key, bundled_zip)

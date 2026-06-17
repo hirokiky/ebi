@@ -17,7 +17,6 @@ def main():
     """ Main function called from console_scripts
     """
     logger = logging.getLogger('ebi')
-    logger.propagate = True
     logger.setLevel(logging.INFO)
     logger.addHandler(logging.StreamHandler())
 
