@@ -47,5 +47,9 @@ def main():
     boto3.setup_default_session(**conf)
     session = boto3._get_default_session()
     ebaws.set_region(session._session.get_config_variable('region'))
-    ebaws.set_profile(session.profile_name)
+    # Session.profile_name falls back to 'default', which would make
+    # botocore ignore credentials from environment variables.
+    profile = session._session.get_config_variable('profile')
+    if profile:
+        ebaws.set_profile(profile)
     parsed.func(parsed)
