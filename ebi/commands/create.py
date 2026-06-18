@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 def main(parsed):
     version, description = utils.get_version_and_description(parsed)
 
-    appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.docker_compose, parsed.ebext, parsed.use_ebignore, description)
+    appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.docker_compose, parsed.ebext, description)
 
     logger.info('Ok, now creating version %s for environment %s', version, parsed.env_name)
     payload = ['eb', 'create', parsed.env_name,
