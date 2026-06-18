@@ -1,4 +1,5 @@
 import logging
+import subprocess
 import sys
 import time
 
@@ -17,10 +18,7 @@ def get_version_and_description(parsed):
     else:
         version = str(int(time.time()))
 
-    if parsed.description:
-        description = parsed.description
-    else:
-        description = ''
+    description = parsed.description or ''
     return version, description
 
 
@@ -33,6 +31,20 @@ def append_common_options(payload, parsed):
         payload.append(f'--region={parsed.region}')
     if parsed.timeout:
         payload.append(f'--timeout={parsed.timeout}')
+
+
+def deploy_version(env_name, version, parsed):
+    """ Run `eb deploy` of :param version: to :param env_name:.
+
+    Exits the process with the eb return code on failure.
+    """
+    payload = ['eb', 'deploy', env_name, f'--version={version}']
+    append_common_options(payload, parsed)
+    r = subprocess.call(payload)
+    if r != 0:
+        logger.error("Failed to deploy version %s to environment %s",
+                     version, env_name)
+        sys.exit(r)
 
 
 def get_environ_name_for_cname(app_name, cname):
