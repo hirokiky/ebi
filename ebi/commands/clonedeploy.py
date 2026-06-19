@@ -55,14 +55,7 @@ def main(parsed):
 
     appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.docker_compose, parsed.ebext, description)
     logger.info('Ok, now deploying the version %s for %s', version, next_env_name)
-    payload = ['eb', 'deploy', next_env_name,
-               f'--version={version}']
-    utils.append_common_options(payload, parsed)
-    r = subprocess.call(payload)
-    if r != 0:
-        logger.error("Failed to deploy version %s to environment %s",
-                     version, next_env_name)
-        sys.exit(r)
+    utils.deploy_version(next_env_name, version, parsed)
 
     ###
     # Swapping
