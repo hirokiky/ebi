@@ -101,7 +101,7 @@ def main(parsed):
     ###
     version, description = utils.get_version_and_description(parsed)
 
-    appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.docker_compose, parsed.ebext, parsed.use_ebignore, description)
+    appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.docker_compose, parsed.ebext, description)
     logger.info('Ok, now deploying the version %s for %s', version, secondary_env_name)
     payload = ['eb', 'deploy', secondary_env_name,
                f'--version={version}']
