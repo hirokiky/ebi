@@ -125,11 +125,18 @@ def main(parsed):
                 },
             ]
         )
+        secondary_group_name = None
+        primary_group_name = None
         for x in as_json['Tags']:
             if x['Key'] == 'Name' and x['Value'] == secondary_env_name:
                 secondary_group_name = x['ResourceId']
             elif x['Key'] == 'Name' and x['Value'] == primary_env_name:
                 primary_group_name = x['ResourceId']
+        if secondary_group_name is None or primary_group_name is None:
+            logger.error(
+                'Could not find Auto Scaling group(s) for environments %s and %s',
+                secondary_env_name, primary_env_name)
+            sys.exit(1)
         update_secondary_group_capacity(
             primary_group_name,
             secondary_group_name,
