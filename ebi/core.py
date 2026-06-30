@@ -2,6 +2,7 @@ import argparse
 import logging
 
 import boto3
+import botocore.session
 from ebcli.lib import aws as ebaws
 
 from .commands.bgdeploy import apply_args as apply_args_bgdeploy
@@ -41,11 +42,21 @@ def main():
     if parsed.region:
         conf['region_name'] = parsed.region
     boto3.setup_default_session(**conf)
-    session = boto3._get_default_session()
-    ebaws.set_region(session._session.get_config_variable('region'))
-    # Session.profile_name falls back to 'default', which would make
-    # botocore ignore credentials from environment variables.
-    profile = session._session.get_config_variable('profile')
+
+    # Resolve the effective region/profile through botocore's public API
+    # (instead of reaching into boto3's private _get_default_session()._session)
+    # and mirror them onto ebcli's AWS layer so `eb` subprocesses use the same.
+    botocore_session = botocore.session.Session()
+    if parsed.profile:
+        botocore_session.set_config_variable('profile', parsed.profile)
+    if parsed.region:
+        botocore_session.set_config_variable('region', parsed.region)
+    ebaws.set_region(botocore_session.get_config_variable('region'))
+    # botocore resolves 'profile' from the explicit value or the
+    # AWS_PROFILE/AWS_DEFAULT_PROFILE env vars and does not fall back to
+    # 'default' (unlike boto3.Session.profile_name), so credentials provided
+    # only via environment variables keep working.
+    profile = botocore_session.get_config_variable('profile')
     if profile:
         ebaws.set_profile(profile)
     parsed.func(parsed)
