@@ -26,6 +26,11 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest",
+]
+
 [project.urls]
 Homepage = "https://github.com/hirokiky/ebi"
 
@@ -34,3 +39,6 @@ ebi = "ebi.core:main"
 
 [tool.setuptools.packages.find]
 include = ["ebi*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
