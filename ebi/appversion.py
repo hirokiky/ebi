@@ -38,10 +38,11 @@ def make_version_file_with_ebignore(version_label, dockerrun=None, docker_compos
         # Dockerrun, docker-compose and ebextensions files are added to zip file later.
         ignore_files |= {DOCKERRUN_NAME, DOCKER_COMPOSE_NAME}
         ignore_ebext_files = set()
-        for file in os.listdir(DOCKEREXT_NAME):
-            ebext_file_path = os.path.join(DOCKEREXT_NAME, file)
-            if os.path.isfile(ebext_file_path):
-                ignore_ebext_files.add(ebext_file_path)
+        if os.path.isdir(DOCKEREXT_NAME):
+            for file in os.listdir(DOCKEREXT_NAME):
+                ebext_file_path = os.path.join(DOCKEREXT_NAME, file)
+                if os.path.isfile(ebext_file_path):
+                    ignore_ebext_files.add(ebext_file_path)
         ignore_files |= ignore_ebext_files
 
         zip_filename = f"{version_label}.zip"
@@ -51,11 +52,12 @@ def make_version_file_with_ebignore(version_label, dockerrun=None, docker_compos
 
         logger.info(f'Adding {DOCKERRUN_NAME}, {DOCKER_COMPOSE_NAME}, {DOCKEREXT_NAME} to archive.')
         with zipfile.ZipFile(zip_filename, 'a', compression=zipfile.ZIP_DEFLATED, allowZip64=True) as f:
-            for file in os.listdir(ebext):
-                source_ebext_file_path = os.path.join(ebext, file)
-                target_ebext_file_path = os.path.join(DOCKEREXT_NAME, file)
-                if os.path.isfile(source_ebext_file_path):
-                    f.write(source_ebext_file_path, arcname=target_ebext_file_path)
+            if os.path.isdir(ebext):
+                for file in os.listdir(ebext):
+                    source_ebext_file_path = os.path.join(ebext, file)
+                    target_ebext_file_path = os.path.join(DOCKEREXT_NAME, file)
+                    if os.path.isfile(source_ebext_file_path):
+                        f.write(source_ebext_file_path, arcname=target_ebext_file_path)
 
             if docker_compose:
                 f.write(docker_compose, arcname=DOCKER_COMPOSE_NAME)
@@ -88,8 +90,9 @@ def make_version_file(version_label, dockerrun=None, docker_compose=None, ebext=
 
     tempd = tempfile.mkdtemp()
     try:
-        deploy_ebext = os.path.join(tempd, DOCKEREXT_NAME)
-        shutil.copytree(ebext, deploy_ebext)
+        if os.path.isdir(ebext):
+            deploy_ebext = os.path.join(tempd, DOCKEREXT_NAME)
+            shutil.copytree(ebext, deploy_ebext)
 
         # docker-compose takes precedence over dockerrun
         if docker_compose:
