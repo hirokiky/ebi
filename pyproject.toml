@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ebi"
-version = "0.12.0"
+version = "1.0b1"
 description = "Simple CLI tool for ElasticBeanstalk with Docker"
 readme = "README.rst"
 license = "MIT"
