@@ -5,7 +5,6 @@ import time
 
 import boto3
 
-from .. import appversion
 from . import utils
 
 logger = logging.getLogger(__name__)
@@ -51,14 +50,9 @@ def main(parsed):
     ###
     # Deploying
     ###
-    version, description = utils.get_version_and_description(parsed)
-
-    appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.docker_compose, parsed.ebext, description)
+    version = utils.build_application_version(parsed)
     logger.info('Ok, now deploying the version %s for %s', version, next_env_name)
-    payload = ['eb', 'deploy', next_env_name,
-               f'--version={version}']
-    utils.append_common_options(payload, parsed)
-    r = subprocess.call(payload)
+    r = utils.deploy_version(next_env_name, version, parsed)
     if r != 0:
         logger.error("Failed to deploy version %s to environment %s",
                      version, next_env_name)

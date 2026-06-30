@@ -2,17 +2,13 @@ import logging
 import subprocess
 import sys
 
-from .. import appversion
 from . import utils
 
 logger = logging.getLogger(__name__)
 
 
 def main(parsed):
-    version, description = utils.get_version_and_description(parsed)
-
-    appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.docker_compose, parsed.ebext, description)
-
+    version = utils.build_application_version(parsed)
     logger.info('Ok, now creating version %s for environment %s', version, parsed.env_name)
     payload = ['eb', 'create', parsed.env_name,
                '--timeout=45',

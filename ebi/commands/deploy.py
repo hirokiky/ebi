@@ -1,24 +1,16 @@
 import logging
-import subprocess
 import sys
 
-from .. import appversion
 from . import utils
 
 logger = logging.getLogger(__name__)
 
 
 def main(parsed):
-    version, description = utils.get_version_and_description(parsed)
-
-    appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.docker_compose, parsed.ebext, description)
+    version = utils.build_application_version(parsed)
     logger.info('Ok, now deploying the version %s for %s', version, parsed.env_name)
-    payload = ['eb', 'deploy', parsed.env_name,
-               f'--version={version}']
-    utils.append_common_options(payload, parsed)
-    if parsed.staged:
-        payload.append('--staged')
-    sys.exit(subprocess.call(payload))
+    extra_args = ['--staged'] if parsed.staged else None
+    sys.exit(utils.deploy_version(parsed.env_name, version, parsed, extra_args))
 
 
 def apply_args(parser):
