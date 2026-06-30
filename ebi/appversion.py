@@ -18,16 +18,17 @@ DOCKER_COMPOSE_NAME = 'docker-compose.yml'
 DOCKEREXT_NAME = '.ebextensions/'
 
 
-def make_version_file_with_ebignore(version_label, dockerrun=None, docker_compose=None, ebext=None):
+def make_version_file_with_ebignore(version_label, dest_dir, dockerrun=None, docker_compose=None, ebext=None):
     """ Making zip file to upload for ElasticBeanstalk based on ebignore
 
     :param version_label: will be name of the created zip file
+    :param dest_dir: directory the created zip file is written to
 
     * Including :param dockerrun: file as Dockerrun.aws.json
     * Including :param docker_compose: file as docker-compose.yml (for Amazon linux2)
     * Including :param ebext: directory as .ebextensions/
 
-    :return: File path to created zip file (current directory).
+    :return: File path to created zip file (inside dest_dir).
     """
     ebext = ebext or DOCKEREXT_NAME
 
@@ -47,10 +48,11 @@ def make_version_file_with_ebignore(version_label, dockerrun=None, docker_compos
         zip_filename = f"{version_label}.zip"
         temp_zip_path = os.path.join(tempd, zip_filename)
         fileoperations.zip_up_project(temp_zip_path, ignore_list=ignore_files)
-        shutil.copyfile(temp_zip_path, zip_filename)
+        bundle_path = os.path.join(dest_dir, zip_filename)
+        shutil.copyfile(temp_zip_path, bundle_path)
 
         logger.info(f'Adding {DOCKERRUN_NAME}, {DOCKER_COMPOSE_NAME}, {DOCKEREXT_NAME} to archive.')
-        with zipfile.ZipFile(zip_filename, 'a', compression=zipfile.ZIP_DEFLATED, allowZip64=True) as f:
+        with zipfile.ZipFile(bundle_path, 'a', compression=zipfile.ZIP_DEFLATED, allowZip64=True) as f:
             for file in os.listdir(ebext):
                 source_ebext_file_path = os.path.join(ebext, file)
                 target_ebext_file_path = os.path.join(DOCKEREXT_NAME, file)
@@ -65,22 +67,23 @@ def make_version_file_with_ebignore(version_label, dockerrun=None, docker_compos
                 dockerrun = dockerrun or DOCKERRUN_NAME
                 f.write(dockerrun, arcname=DOCKERRUN_NAME)
 
-        return zip_filename
+        return bundle_path
 
     finally:
         shutil.rmtree(tempd)
 
 
-def make_version_file(version_label, dockerrun=None, docker_compose=None, ebext=None):
+def make_version_file(version_label, dest_dir, dockerrun=None, docker_compose=None, ebext=None):
     """ Making zip file to upload for ElasticBeanstalk
 
     :param version_label: will be name of the created zip file
+    :param dest_dir: directory the created zip file is written to
 
     * Including :param dockerrun: file as Dockerrun.aws.json
     * Including :param docker_compose: file as docker-compose.yml (for Amazon linux2)
     * Including :param ebext: directory as .ebextensions/
 
-    :return: File path to created zip file (current directory).
+    :return: File path to created zip file (inside dest_dir).
     """
     dockerrun = dockerrun or DOCKERRUN_NAME
 
@@ -99,7 +102,7 @@ def make_version_file(version_label, dockerrun=None, docker_compose=None, ebext=
             deploy_dockerrun = os.path.join(tempd, DOCKERRUN_NAME)
             shutil.copyfile(dockerrun, deploy_dockerrun)
 
-        return shutil.make_archive(version_label, 'zip', root_dir=tempd)
+        return shutil.make_archive(os.path.join(dest_dir, version_label), 'zip', root_dir=tempd)
     finally:
         shutil.rmtree(tempd)
 
@@ -123,12 +126,16 @@ def upload_app_version(app_name, bundled_zip):
 
 
 def make_application_version(app_name, version, dockerrun, docker_compose, ebext, description):
-    if os.path.isfile(".ebignore"):
-        bundled_zip = make_version_file_with_ebignore(version, dockerrun=dockerrun, docker_compose=docker_compose, ebext=ebext)
-    else:
-        logger.info('.ebignore does not exist. Make a version file not using ebignore')
-        bundled_zip = make_version_file(version, dockerrun=dockerrun, docker_compose=docker_compose, ebext=ebext)
+    # Build the bundle inside a dedicated temp directory so the project root is
+    # never polluted and no stale zip is left behind if something fails midway.
+    bundle_dir = tempfile.mkdtemp()
     try:
+        if os.path.isfile(".ebignore"):
+            bundled_zip = make_version_file_with_ebignore(version, bundle_dir, dockerrun=dockerrun, docker_compose=docker_compose, ebext=ebext)
+        else:
+            logger.info('.ebignore does not exist. Make a version file not using ebignore')
+            bundled_zip = make_version_file(version, bundle_dir, dockerrun=dockerrun, docker_compose=docker_compose, ebext=ebext)
+
         bucket, key = upload_app_version(app_name, bundled_zip)
 
         logger.info('Creating application version')
@@ -143,4 +150,4 @@ def make_application_version(app_name, version, dockerrun, docker_compose, ebext
             }
         )
     finally:
-        os.remove(bundled_zip)
+        shutil.rmtree(bundle_dir)
