@@ -1,8 +1,11 @@
 import logging
+import subprocess
 import sys
 import time
 
 import boto3
+
+from .. import appversion
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +27,17 @@ def get_version_and_description(parsed):
     return version, description
 
 
+def build_application_version(parsed):
+    """ Build the bundle for :param parsed: and register it as an application
+    version. Returns the resolved version label.
+    """
+    version, description = get_version_and_description(parsed)
+    appversion.make_application_version(
+        parsed.app_name, version,
+        parsed.dockerrun, parsed.docker_compose, parsed.ebext, description)
+    return version
+
+
 def append_common_options(payload, parsed):
     """ Append common eb command options to :param payload: from parsed arguments.
     """
@@ -33,6 +47,18 @@ def append_common_options(payload, parsed):
         payload.append(f'--region={parsed.region}')
     if parsed.timeout:
         payload.append(f'--timeout={parsed.timeout}')
+
+
+def deploy_version(env_name, version, parsed, extra_args=None):
+    """ Run ``eb deploy`` for :param env_name: with the given :param version:.
+
+    Returns the subprocess return code.
+    """
+    payload = ['eb', 'deploy', env_name, f'--version={version}']
+    append_common_options(payload, parsed)
+    if extra_args:
+        payload.extend(extra_args)
+    return subprocess.call(payload)
 
 
 def get_environ_name_for_cname(app_name, cname):
