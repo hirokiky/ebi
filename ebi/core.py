@@ -36,21 +36,12 @@ def main():
         parser.print_help()
         return
 
-    conf = {}
-    if parsed.profile:
-        conf['profile_name'] = parsed.profile
-    if parsed.region:
-        conf['region_name'] = parsed.region
-    boto3.setup_default_session(**conf)
-
-    # Resolve the effective region/profile through botocore's public API
-    # (instead of reaching into boto3's private _get_default_session()._session)
-    # and mirror them onto ebcli's AWS layer so `eb` subprocesses use the same.
     botocore_session = botocore.session.Session()
     if parsed.profile:
         botocore_session.set_config_variable('profile', parsed.profile)
     if parsed.region:
         botocore_session.set_config_variable('region', parsed.region)
+    boto3.setup_default_session(botocore_session=botocore_session)
     ebaws.set_region(botocore_session.get_config_variable('region'))
     # botocore resolves 'profile' from the explicit value or the
     # AWS_PROFILE/AWS_DEFAULT_PROFILE env vars and does not fall back to
