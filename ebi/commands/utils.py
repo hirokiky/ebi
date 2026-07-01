@@ -43,9 +43,15 @@ def get_environ_name_for_cname(app_name, cname):
     myenv.ap-northeast-1.elasticbeanstalk.com will be returned.
     """
     eb = boto3.client('elasticbeanstalk')
-    res = eb.describe_environments(ApplicationName=app_name)
+    environments = []
+    for page in eb.get_paginator('describe_environments').paginate(ApplicationName=app_name):
+        environments.extend(page['Environments'])
 
-    for e in reversed(sorted(res['Environments'], key=lambda x: len(x['CNAME']))):
+    # Terminated environments may still be returned and can carry a stale or
+    # reused CNAME, so they must not be matched.
+    environments = [e for e in environments if e.get('Status') != 'Terminated']
+
+    for e in sorted(environments, key=lambda x: len(x['CNAME']), reverse=True):
         if e['CNAME'].startswith(f'{cname}.'):
             return e['EnvironmentName']
     logger.error('Could not find environment for applied app_name and cname')
