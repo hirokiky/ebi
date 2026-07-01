@@ -72,7 +72,12 @@ def update_secondary_group_capacity(primary_group_name, secondary_group_name, se
 
     logger.info("The all of instances are healthy.")
 
-    # update EB environment description
+    # Persist the standby environment's ASG bounds at the EB level.
+    # NOTE: Elastic Beanstalk does not expose DesiredCapacity as an
+    # OptionSetting, so only MinSize/MaxSize are reconciled here. The desired
+    # count is applied directly on the ASG above (update_auto_scaling_group);
+    # EB does not pin it, so it may drift back within [MinSize, MaxSize] when
+    # the environment is reconciled.
     eb = boto3.client('elasticbeanstalk')
     eb.update_environment(
         ApplicationName=app_name,
