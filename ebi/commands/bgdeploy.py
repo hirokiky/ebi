@@ -157,8 +157,8 @@ def main(parsed):
 
 def apply_args(parser):
     parser.add_argument('app_name', help='Application name to deploy')
-    parser.add_argument('green_env', help='green env name')
     parser.add_argument('blue_env', help='blue env name')
+    parser.add_argument('green_env', help='green env name')
     parser.add_argument('cname', help='cname prefix for primary environment')
     parser.add_argument('--noswap', help='Without swapping, it will just deploy for secondary'
                                          'environment',
