@@ -4,6 +4,7 @@ import logging
 import boto3
 from ebcli.lib import aws as ebaws
 
+from . import __version__
 from .commands.bgdeploy import apply_args as apply_args_bgdeploy
 from .commands.clonedeploy import apply_args as apply_args_clonedeploy
 from .commands.create import apply_args as apply_args_create
@@ -18,6 +19,7 @@ def main():
     logger.addHandler(logging.StreamHandler())
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('--version', action='version', version=f'%(prog)s {__version__}')
     subparsers = parser.add_subparsers()
     parser_bgdeploy = subparsers.add_parser('bgdeploy')
     parser_clonedeploy = subparsers.add_parser('clonedeploy')
