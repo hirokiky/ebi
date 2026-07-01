@@ -75,7 +75,7 @@ options:
 bgdeploy
 ~~~~~~~~
 
-To Blue-Green deploye app, just type it on project root::
+To Blue-Green deploy app, just type it on project root::
 
     $ ebi bgdeploy <app_name> <blue_env_name> <green_env_name> <primary_env_cname>
 
@@ -83,7 +83,7 @@ This will
 
 1. Create zip file including ``Dockerrun.aws.json`` and ``.ebextensions`` or ``docker-compose.yml`` and ``.ebextensions``
 2. Uploading zip to S3 as same directory as ``awsebcli``.
-3. Deploy new version to secondary environment which doen't have ``primary_env_cname``
+3. Deploy new version to secondary environment which doesn't have ``primary_env_cname``
    (by calling ``eb deploy`` with uploaded --version)
 4. Apply primary cname for deployed (secondary) environment
 
