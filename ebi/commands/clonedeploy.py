@@ -1,5 +1,4 @@
 import logging
-import subprocess
 import sys
 import time
 
@@ -42,7 +41,7 @@ def main(parsed):
     if parsed.exact:
         payload.append('--exact')
 
-    r = subprocess.call(payload)
+    r = utils.call_eb(payload)
     if r != 0:
         logger.error("Failed to clone %s to environment %s",
                      master_env_name, next_env_cname)
@@ -58,7 +57,7 @@ def main(parsed):
     payload = ['eb', 'deploy', next_env_name,
                f'--version={version}']
     utils.append_common_options(payload, parsed)
-    r = subprocess.call(payload)
+    r = utils.call_eb(payload)
     if r != 0:
         logger.error("Failed to deploy version %s to environment %s",
                      version, next_env_name)

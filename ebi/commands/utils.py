@@ -1,10 +1,21 @@
 import logging
+import subprocess
 import sys
 import time
 
 import boto3
 
 logger = logging.getLogger(__name__)
+
+
+def call_eb(payload):
+    """ Run the eb CLI with :param payload:, exiting clearly when eb is missing.
+    """
+    try:
+        return subprocess.call(payload)
+    except FileNotFoundError:
+        logger.error('eb command not found. Install awsebcli to use ebi.')
+        sys.exit(1)
 
 
 def get_version_and_description(parsed):
