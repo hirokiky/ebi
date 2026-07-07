@@ -1,5 +1,4 @@
 import logging
-import subprocess
 import sys
 
 from .. import appversion
@@ -21,7 +20,7 @@ def main(parsed):
     utils.append_common_options(payload, parsed)
     if parsed.cfg:
         payload.append(f'--cfg={parsed.cfg}')
-    sys.exit(subprocess.call(payload))
+    sys.exit(utils.call_eb(payload))
 
 
 def apply_args(parser):

@@ -1,6 +1,7 @@
 import logging
 import os
 import shutil
+import sys
 import tempfile
 import zipfile
 
@@ -126,6 +127,15 @@ def upload_app_version(app_name, bundled_zip):
 
 
 def make_application_version(app_name, version, dockerrun, docker_compose, ebext, description):
+    if docker_compose and not os.path.isfile(docker_compose):
+        logger.error('docker-compose file %s does not exist', docker_compose)
+        sys.exit(1)
+    if not docker_compose:
+        dockerrun_path = dockerrun or DOCKERRUN_NAME
+        if not os.path.isfile(dockerrun_path):
+            logger.error('Dockerrun file %s does not exist', dockerrun_path)
+            sys.exit(1)
+
     if os.path.isfile(".ebignore"):
         bundled_zip = make_version_file_with_ebignore(version, dockerrun=dockerrun, docker_compose=docker_compose, ebext=ebext)
     else:
