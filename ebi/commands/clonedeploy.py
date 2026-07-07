@@ -78,7 +78,7 @@ def main(parsed):
                 master_env_name, next_env_name)
     eb.swap_environment_cnames(SourceEnvironmentName=master_env_name,
                                DestinationEnvironmentName=next_env_name)
-    logger.info('DONE successfully. Primary %s => new primary %s.'
+    logger.info('DONE successfully. Primary %s => new primary %s. '
                 'If problem, re-swap new primary to primary',
                 master_env_name, next_env_name)
 
@@ -87,11 +87,11 @@ def apply_args(parser):
     parser.add_argument('app_name', help='Application name to deploy')
     parser.add_argument('env_name', help='Environment name')
     parser.add_argument('cname', help='cname prefix')
-    parser.add_argument('--noswap', help='Without swapping, it will just deploy for secondary'
+    parser.add_argument('--noswap', help='Without swapping, it will just deploy for secondary '
                                          'environment',
                         action='store_true', default=False)
     utils.add_common_args(parser)
-    parser.add_argument('--exact', help='Prevents Elastic Beanstalk from updating'
+    parser.add_argument('--exact', help='Prevents Elastic Beanstalk from updating '
                                         'the solution stack version',
                         action='store_true', default=False)
     parser.set_defaults(func=main)
