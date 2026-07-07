@@ -24,8 +24,10 @@ def get_version_and_description(parsed):
     return version, description
 
 
-def append_common_options(payload, parsed):
+def append_common_options(payload, parsed, default_timeout=None):
     """ Append common eb command options to :param payload: from parsed arguments.
+
+    :param default_timeout: timeout minutes applied when --timeout was not given.
     """
     if parsed.profile:
         payload.append(f'--profile={parsed.profile}')
@@ -33,6 +35,8 @@ def append_common_options(payload, parsed):
         payload.append(f'--region={parsed.region}')
     if parsed.timeout:
         payload.append(f'--timeout={parsed.timeout}')
+    elif default_timeout is not None:
+        payload.append(f'--timeout={default_timeout}')
 
 
 def get_environ_name_for_cname(app_name, cname):

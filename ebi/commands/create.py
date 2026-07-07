@@ -15,10 +15,9 @@ def main(parsed):
 
     logger.info('Ok, now creating version %s for environment %s', version, parsed.env_name)
     payload = ['eb', 'create', parsed.env_name,
-               '--timeout=45',
                f'--version={version}',
                f'--cname={parsed.cname}']
-    utils.append_common_options(payload, parsed)
+    utils.append_common_options(payload, parsed, default_timeout=45)
     if parsed.cfg:
         payload.append(f'--cfg={parsed.cfg}')
     sys.exit(subprocess.call(payload))
