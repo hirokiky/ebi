@@ -39,10 +39,9 @@ def make_version_file_with_ebignore(version_label, dockerrun=None, docker_compos
         ignore_files |= {DOCKERRUN_NAME, DOCKER_COMPOSE_NAME}
         ignore_ebext_files = set()
         if os.path.isdir(DOCKEREXT_NAME):
-            for file in os.listdir(DOCKEREXT_NAME):
-                ebext_file_path = os.path.join(DOCKEREXT_NAME, file)
-                if os.path.isfile(ebext_file_path):
-                    ignore_ebext_files.add(ebext_file_path)
+            for root, dirs, files in os.walk(DOCKEREXT_NAME):
+                for file in files:
+                    ignore_ebext_files.add(os.path.join(root, file))
         ignore_files |= ignore_ebext_files
 
         zip_filename = f"{version_label}.zip"
@@ -53,16 +52,16 @@ def make_version_file_with_ebignore(version_label, dockerrun=None, docker_compos
         logger.info(f'Adding {DOCKERRUN_NAME}, {DOCKER_COMPOSE_NAME}, {DOCKEREXT_NAME} to archive.')
         with zipfile.ZipFile(zip_filename, 'a', compression=zipfile.ZIP_DEFLATED, allowZip64=True) as f:
             if os.path.isdir(ebext):
-                for file in os.listdir(ebext):
-                    source_ebext_file_path = os.path.join(ebext, file)
-                    target_ebext_file_path = os.path.join(DOCKEREXT_NAME, file)
-                    if os.path.isfile(source_ebext_file_path):
+                for root, dirs, files in os.walk(ebext):
+                    for file in files:
+                        source_ebext_file_path = os.path.join(root, file)
+                        target_ebext_file_path = os.path.join(
+                            DOCKEREXT_NAME, os.path.relpath(source_ebext_file_path, ebext))
                         f.write(source_ebext_file_path, arcname=target_ebext_file_path)
 
+            # docker-compose takes precedence over dockerrun
             if docker_compose:
                 f.write(docker_compose, arcname=DOCKER_COMPOSE_NAME)
-                if dockerrun:
-                    f.write(dockerrun, arcname=DOCKERRUN_NAME)
             else:
                 dockerrun = dockerrun or DOCKERRUN_NAME
                 f.write(dockerrun, arcname=DOCKERRUN_NAME)
