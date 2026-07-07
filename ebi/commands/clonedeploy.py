@@ -30,6 +30,11 @@ def make_next_env_names(base_env_name, base_cname):
 def main(parsed):
     master_env_name = utils.get_environ_name_for_cname(parsed.app_name, parsed.cname)
     next_env_name, next_env_cname = make_next_env_names(parsed.env_name, parsed.cname)
+    # Elastic Beanstalk limits environment names to 40 characters.
+    if len(next_env_name) > 40:
+        logger.error('Environment name %s exceeds the Elastic Beanstalk limit of 40 characters. '
+                     'Use a shorter env_name', next_env_name)
+        sys.exit(1)
 
     ###
     # Cloning
