@@ -38,6 +38,22 @@ def get_instance_health(group_name, number):
     return True
 
 
+def wait_for_environment_ready(app_name, env_name):
+    eb = boto3.client('elasticbeanstalk')
+    start = time.time()
+    while True:
+        res = eb.describe_environments(
+            ApplicationName=app_name, EnvironmentNames=[env_name])
+        if res['Environments'][0]['Status'] == 'Ready':
+            return
+        passed_time = time.time() - start
+        # Make timeout 20 minutes
+        if passed_time >= 20 * 60:
+            logger.warning("Waiting for the environment update timed out.")
+            sys.exit(1)
+        time.sleep(30)
+
+
 def update_secondary_group_capacity(primary_group_name, secondary_group_name, secondary_env_name, app_name):
     autoscale = boto3.client('autoscaling')
     as_json = autoscale.describe_auto_scaling_groups(
@@ -82,6 +98,11 @@ def update_secondary_group_capacity(primary_group_name, secondary_group_name, se
             {'Namespace': 'aws:autoscaling:asg', 'OptionName': 'MaxSize', 'Value': str(max_size)}
         ]
     )
+
+    # update_environment is asynchronous; swapping CNAMEs while the
+    # environment is still updating would fail.
+    logger.info('Wait for the environment update to complete')
+    wait_for_environment_ready(app_name, secondary_env_name)
 
 
 def main(parsed):
