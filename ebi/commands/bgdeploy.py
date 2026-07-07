@@ -1,3 +1,4 @@
+import argparse
 import logging
 import subprocess
 import sys
@@ -11,7 +12,7 @@ from . import utils
 logger = logging.getLogger(__name__)
 
 
-def get_instance_health(group_name, number):
+def get_instance_health(group_name: str, number: int) -> bool:
     autoscale = boto3.client('autoscaling')
     as_json = autoscale.describe_auto_scaling_groups(
         AutoScalingGroupNames=[group_name])
@@ -38,7 +39,8 @@ def get_instance_health(group_name, number):
     return True
 
 
-def update_secondary_group_capacity(primary_group_name, secondary_group_name, secondary_env_name, app_name):
+def update_secondary_group_capacity(primary_group_name: str, secondary_group_name: str,
+                                    secondary_env_name: str, app_name: str) -> None:
     autoscale = boto3.client('autoscaling')
     as_json = autoscale.describe_auto_scaling_groups(
         AutoScalingGroupNames=[primary_group_name])
@@ -84,7 +86,7 @@ def update_secondary_group_capacity(primary_group_name, secondary_group_name, se
     )
 
 
-def main(parsed):
+def main(parsed: argparse.Namespace) -> None:
     master_env_name = utils.get_environ_name_for_cname(parsed.app_name, parsed.cname)
     if parsed.blue_env == master_env_name:
         primary_env_name = parsed.blue_env
@@ -155,7 +157,7 @@ def main(parsed):
                 primary_env_name, secondary_env_name)
 
 
-def apply_args(parser):
+def apply_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument('app_name', help='Application name to deploy')
     parser.add_argument('blue_env', help='blue env name')
     parser.add_argument('green_env', help='green env name')

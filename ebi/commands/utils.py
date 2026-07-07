@@ -1,3 +1,4 @@
+import argparse
 import logging
 import sys
 import time
@@ -7,7 +8,7 @@ import boto3
 logger = logging.getLogger(__name__)
 
 
-def get_version_and_description(parsed):
+def get_version_and_description(parsed: argparse.Namespace) -> tuple[str, str]:
     """ Determine version label and description from parsed arguments.
     """
     if parsed.version:
@@ -24,7 +25,7 @@ def get_version_and_description(parsed):
     return version, description
 
 
-def append_common_options(payload, parsed):
+def append_common_options(payload: list[str], parsed: argparse.Namespace) -> None:
     """ Append common eb command options to :param payload: from parsed arguments.
     """
     if parsed.profile:
@@ -35,7 +36,7 @@ def append_common_options(payload, parsed):
         payload.append(f'--timeout={parsed.timeout}')
 
 
-def get_environ_name_for_cname(app_name, cname):
+def get_environ_name_for_cname(app_name: str, cname: str) -> str:
     """ Determine environment name having :param cname: on :param app_name:.
 
     If cname duplicated, longer one will be returned.
@@ -52,7 +53,7 @@ def get_environ_name_for_cname(app_name, cname):
     sys.exit(1)
 
 
-def add_common_args(parser):
+def add_common_args(parser: argparse.ArgumentParser) -> None:
     """ Add arguments common to all subcommands to :param parser:.
     """
     parser.add_argument('--version', help='Version label you want to specify')

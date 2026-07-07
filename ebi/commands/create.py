@@ -1,3 +1,4 @@
+import argparse
 import logging
 import subprocess
 import sys
@@ -8,7 +9,7 @@ from . import utils
 logger = logging.getLogger(__name__)
 
 
-def main(parsed):
+def main(parsed: argparse.Namespace) -> None:
     version, description = utils.get_version_and_description(parsed)
 
     appversion.make_application_version(parsed.app_name, version, parsed.dockerrun, parsed.docker_compose, parsed.ebext, description)
@@ -24,7 +25,7 @@ def main(parsed):
     sys.exit(subprocess.call(payload))
 
 
-def apply_args(parser):
+def apply_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument('app_name', help='Application name to create')
     parser.add_argument('env_name', help='Environ name to deploy')
     parser.add_argument('cname', help='cname for created server')
