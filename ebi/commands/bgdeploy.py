@@ -150,7 +150,7 @@ def main(parsed):
                 primary_env_name, secondary_env_name)
     eb.swap_environment_cnames(SourceEnvironmentName=primary_env_name,
                                DestinationEnvironmentName=secondary_env_name)
-    logger.info('DONE successfully. Primary %s => new primary %s.'
+    logger.info('DONE successfully. Primary %s => new primary %s. '
                 'If problem, re-swap new primary to primary',
                 primary_env_name, secondary_env_name)
 
@@ -160,7 +160,7 @@ def apply_args(parser):
     parser.add_argument('blue_env', help='blue env name')
     parser.add_argument('green_env', help='green env name')
     parser.add_argument('cname', help='cname prefix for primary environment')
-    parser.add_argument('--noswap', help='Without swapping, it will just deploy for secondary'
+    parser.add_argument('--noswap', help='Without swapping, it will just deploy for secondary '
                                          'environment',
                         action='store_true', default=False)
     utils.add_common_args(parser)
