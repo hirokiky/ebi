@@ -10,7 +10,7 @@ from ebcli.lib import s3 as ebs3
 from ebcli.lib import elasticbeanstalk
 from ebcli.objects.exceptions import NotFoundError
 
-logger = logging.getLogger('ebi')
+logger = logging.getLogger(__name__)
 
 
 DOCKERRUN_NAME = 'Dockerrun.aws.json'
