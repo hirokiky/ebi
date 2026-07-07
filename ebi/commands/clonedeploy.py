@@ -35,10 +35,10 @@ def main(parsed):
     # Cloning
     ###
     payload = ['eb', 'clone', master_env_name,
-               '--timeout=45',  # Basically, it takes a while.
                f'--clone_name={next_env_name}',
                f'--cname={next_env_cname}']
-    utils.append_common_options(payload, parsed)
+    # Cloning basically takes a while, so default to a long timeout.
+    utils.append_common_options(payload, parsed, default_timeout=45)
     if parsed.exact:
         payload.append('--exact')
 
