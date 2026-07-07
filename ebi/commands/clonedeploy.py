@@ -1,3 +1,4 @@
+import argparse
 import logging
 import subprocess
 import sys
@@ -11,7 +12,7 @@ from . import utils
 logger = logging.getLogger(__name__)
 
 
-def base36encode(num):
+def base36encode(num: int) -> str:
     result = ""
     base = 36
     nchar = '0123456789abcdefghijklmnopqrstuvwxyz'
@@ -22,12 +23,12 @@ def base36encode(num):
     return result
 
 
-def make_next_env_names(base_env_name, base_cname):
+def make_next_env_names(base_env_name: str, base_cname: str) -> tuple[str, str]:
     suffix = f'-{base36encode(int(time.time()))}'
     return f'{base_env_name}{suffix}', f'{base_cname}{suffix}'
 
 
-def main(parsed):
+def main(parsed: argparse.Namespace) -> None:
     master_env_name = utils.get_environ_name_for_cname(parsed.app_name, parsed.cname)
     next_env_name, next_env_cname = make_next_env_names(parsed.env_name, parsed.cname)
 
@@ -83,7 +84,7 @@ def main(parsed):
                 master_env_name, next_env_name)
 
 
-def apply_args(parser):
+def apply_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument('app_name', help='Application name to deploy')
     parser.add_argument('env_name', help='Environment name')
     parser.add_argument('cname', help='cname prefix')

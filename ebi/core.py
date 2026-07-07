@@ -11,7 +11,7 @@ from .commands.create import apply_args as apply_args_create
 from .commands.deploy import apply_args as apply_args_deploy
 
 
-def main():
+def main() -> None:
     """ Main function called from console_scripts
     """
     logger = logging.getLogger('ebi')

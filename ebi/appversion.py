@@ -18,7 +18,8 @@ DOCKER_COMPOSE_NAME = 'docker-compose.yml'
 DOCKEREXT_NAME = '.ebextensions/'
 
 
-def make_version_file_with_ebignore(version_label, dockerrun=None, docker_compose=None, ebext=None):
+def make_version_file_with_ebignore(version_label: str, dockerrun: str | None = None,
+                                    docker_compose: str | None = None, ebext: str | None = None) -> str:
     """ Making zip file to upload for ElasticBeanstalk based on ebignore
 
     :param version_label: will be name of the created zip file
@@ -73,7 +74,8 @@ def make_version_file_with_ebignore(version_label, dockerrun=None, docker_compos
         shutil.rmtree(tempd)
 
 
-def make_version_file(version_label, dockerrun=None, docker_compose=None, ebext=None):
+def make_version_file(version_label: str, dockerrun: str | None = None,
+                      docker_compose: str | None = None, ebext: str | None = None) -> str:
     """ Making zip file to upload for ElasticBeanstalk
 
     :param version_label: will be name of the created zip file
@@ -107,7 +109,7 @@ def make_version_file(version_label, dockerrun=None, docker_compose=None, ebext=
         shutil.rmtree(tempd)
 
 
-def upload_app_version(app_name, bundled_zip):
+def upload_app_version(app_name: str, bundled_zip: str) -> tuple[str, str]:
     """ Uploading zip file of app version to S3
     :param app_name: application name to deploy
     :param bundled_zip: String path to zip file
@@ -125,7 +127,8 @@ def upload_app_version(app_name, bundled_zip):
     return bucket, key
 
 
-def make_application_version(app_name, version, dockerrun, docker_compose, ebext, description):
+def make_application_version(app_name: str, version: str, dockerrun: str | None,
+                             docker_compose: str | None, ebext: str | None, description: str) -> None:
     if os.path.isfile(".ebignore"):
         bundled_zip = make_version_file_with_ebignore(version, dockerrun=dockerrun, docker_compose=docker_compose, ebext=ebext)
     else:
