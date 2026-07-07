@@ -1,6 +1,7 @@
 import logging
 import os
 import shutil
+import sys
 import tempfile
 import zipfile
 
@@ -126,6 +127,13 @@ def upload_app_version(app_name, bundled_zip):
 
 
 def make_application_version(app_name, version, dockerrun, docker_compose, ebext, description):
+    if ebext:
+        if not os.path.isdir(ebext):
+            logger.error('ebextensions directory %s does not exist', ebext)
+            sys.exit(1)
+    elif not os.path.isdir(DOCKEREXT_NAME):
+        logger.warning(f'{DOCKEREXT_NAME} does not exist. Making a version file without it')
+
     if os.path.isfile(".ebignore"):
         bundled_zip = make_version_file_with_ebignore(version, dockerrun=dockerrun, docker_compose=docker_compose, ebext=ebext)
     else:
