@@ -46,6 +46,8 @@ options:
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
 * ``--region``: region for AWS.
+* ``--timeout``: The number of minutes before the deploy timeout.
+* ``--staged``: Deploy files staged in git rather than the HEAD commit.
 
 create
 ~~~~~~
@@ -70,6 +72,7 @@ options:
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
 * ``--region``: region for AWS.
+* ``--timeout``: The number of minutes before the create timeout. default is 45.
 * ``--cfg``: Configuration template to use.
 
 bgdeploy
@@ -108,6 +111,7 @@ options:
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
 * ``--region``: region for AWS.
+* ``--timeout``: The number of minutes before the deploy timeout.
 * ``--capacity``: Increase the number of desired instances, the minimum size, and the maximum size of the standby environment to the same as the primary environment.
 
 clonedeploy
@@ -145,3 +149,4 @@ This will
 * ``--ebext``: Directory path used as ``.ebextensions/``
 * ``--profile``: Configured profile for AWS.
 * ``--region``: region for AWS.
+* ``--timeout``: The number of minutes before the clone/deploy timeout. default is 45 for cloning.
